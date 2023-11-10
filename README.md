@@ -1,6 +1,11 @@
 # Custom ChatGPT - work in progress
 
-This is a ChatGPT like clone for custom purposes. The idea was to replicate the most crucial functionalities for personal use cases and fool around with Next JS.
+This project is a custom-built chatbot application that mimics the functionalities of ChatGPT for personal use. It's built using Python, Django for the backend, and React with Next.js for the frontend. The application provides regular chatting capabilities with history stored in the database, streaming responses, and auto-generated titles using gpt3.5. It also allows for title editing, conversation deletion, and messages regeneration. Project currently supports model selection between gpt3.5 and gpt4. It also features a custom Django admin page for managing conversations, versions, and messages.
+
+It is a work in progress, with plans to add more features and functionalities.
+
+The idea behind this project is to experiment with Next.js and create a personal version of ChatGPT with custom functionalities and features.
+
 
 # Technologies
 
@@ -62,7 +67,7 @@ This is a ChatGPT like clone for custom purposes. The idea was to replicate the 
 - Go to `http://127.0.0.1:3000` and enjoy!
 
 # ToDo:
-- [ ] Dockerize
+- [ ] Dockerize: docker-compose for frontend, backend and db
 - [ ] migrate to PostgreSQL
 - [ ] add support for different LLMs:
   - [ ] Claude
