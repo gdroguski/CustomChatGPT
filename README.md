@@ -45,23 +45,23 @@ The idea behind this project is to experiment with Next.js and create a personal
 # How to run this? (atm, docker-compose incoming)
 - Backend:
   - Setup environment variables in `backend/.env` (create file if not exists):
-    - FRONTEND_URL - url of frontend app - default: http://127.0.0.1:3000
-    - BACKEND_URL - url of backend app - default: http://127.0.0.1:8000
-    - BE_ADMIN_USERNAME - username for django admin page - default: admin
-    - BE_ADMIN_PASSWORD - password for django admin page - default: admin
-    - DJANGO_SECRET_KEY - django secret key
+    - `FRONTEND_URL` - url of frontend app - default: http://127.0.0.1:3000
+    - `BACKEND_URL` - url of backend app - default: http://127.0.0.1:8000
+    - `BE_ADMIN_USERNAME` - username for django admin page - default: admin
+    - `BE_ADMIN_PASSWORD` - password for django admin page - default: admin
+    - `DJANGO_SECRET_KEY` - django secret key
     - GPT part (currently set up for Azure endpoint):
-      - OPENAI_API_TYPE: azure
-      - OPENAI_API_BASE: your azure endpoint
-      - OPENAI_API_VERSION: your azure api version
-      - OPENAI_API_KEY: your azure api key
+      - `OPENAI_API_TYPE`: azure
+      - `OPENAI_API_BASE`: your azure endpoint
+      - `OPENAI_API_VERSION`: your azure api version
+      - `OPENAI_API_KEY`: your azure api key
   - Create virtual environment and install requirements from `dependencies.txt`
   - Run `python manage.py makemigrations` and `python manage.py migrate`
   - Run `python manage.py create_superuser`
   - Run `python manage.py runserver`
 - Frontend:
   - Setup environment variables in `frontend/.env.local` (create file if not exists):
-    - NEXT_PUBLIC_API_BASE_URL - url of backend app - default: http://127.0.0.1:8000
+    - `NEXT_PUBLIC_API_BASE_URL` - url of backend app - default: http://127.0.0.1:8000
   - Run `npm install`
   - Run `npm run dev`
 - Go to `http://127.0.0.1:3000` and enjoy!
