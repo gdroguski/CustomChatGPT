@@ -1,0 +1,127 @@
+.historySidebarContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.newChatButton {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--primary-txt-light);
+    margin: 0.25rem;
+    padding: 0.5rem;
+    font-weight: normal;
+    font-size: 0.75rem;
+    background: none;
+    border-radius: 0.25rem;
+    border-color: var(--primary-txt-light);
+    cursor: pointer;
+}
+
+.newChatButton:hover {
+    color: var(--primary-yellow);
+    border-color: var(--primary-yellow);
+}
+
+.newChatButton::before {
+    content: "+";
+    /*font-size: 1.25rem;*/
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.newChatButton.disabled {
+    cursor: default;
+    background-color: var(--button-bg-disabled);
+    border-color: var(--button-bg-disabled-border);
+}
+
+.newChatButton.disabled:hover {
+    color: var(--primary-txt-light);
+}
+
+.historyContainer {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+}
+
+.historyContainer .conversationItem {
+    font-size: 1rem;
+    margin: 0.25rem;
+    padding: 0;
+    border: 1px solid var(--primary-txt-light);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    fill: var(--primary-txt-light);
+}
+
+.historyContainer .conversationItem:hover {
+    color: var(--primary-yellow);
+    background-color: var(--primary-bg-dark);
+    border-color: var(--primary-yellow);
+}
+
+.historyContainer .conversationItem.disabled {
+    background-color: var(--button-bg-disabled);
+    border-color: var(--button-bg-disabled-border);
+}
+.conversationItem.disabled:hover {
+    color: var(--primary-txt-light);
+    cursor: default;
+}
+
+.conversationButton{
+    padding: 0.5rem;
+    text-align: left;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.conversationButton span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.chatIconContainer {
+    width: 16px;
+    height: 16px;
+    margin-right: 0.25em;
+}
+
+.chatIconContainer.disabled{
+    fill: var(--primary-yellow);
+}
+
+
+.manageConversationContainer {
+    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.manageConversationContainer button {
+    display: none;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    fill: var(--primary-txt-light);
+}
+
+.manageConversationContainer button.disabled {
+    display: block;
+}
+
+.manageConversationContainer button:hover {
+    fill: var(--primary-yellow);
+}

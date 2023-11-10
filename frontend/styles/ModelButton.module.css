@@ -1,0 +1,61 @@
+.choiceContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /*margin: 0.5rem;*/
+    padding: 0;
+    width: 10rem;
+    height: 50px;
+}
+
+.choiceButton {
+    height: 50%;
+    width: 100%;
+    padding: 0.15rem;
+    margin-right: 1rem;
+    background-color: var(--secondary-bg-dark);
+    color: var(--primary-txt-light);
+    border-color: var(--primary-bg-dark);
+    cursor: pointer;
+    font-weight: bolder;
+    font-size: 1rem;
+}
+
+.choiceButton:hover {
+    color: var(--primary-yellow);
+}
+
+.choiceButton:first-child {
+    border-top-left-radius: .5em;
+    border-top-right-radius: .5em;
+}
+
+.choiceButton:last-child {
+    border-bottom-left-radius: .5em;
+    border-bottom-right-radius: .5em;
+}
+
+.chosen {
+    background-color: var(--primary-yellow);
+    color: var(--secondary-bg-dark);
+    border-color: var(--secondary-bg-light);
+    box-shadow: 0 0 0.25rem var(--primary-yellow);
+    cursor: default;
+}
+
+.chosen:hover{
+    color: var(--secondary-bg-dark);
+}
+
+.disabled {
+    cursor: default;
+}
+
+.disabled:hover {
+    color: var(--primary-txt-light);
+}
+
+.disabled.chosen:hover {
+    color: var(--secondary-bg-dark);
+}

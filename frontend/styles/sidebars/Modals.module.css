@@ -1,0 +1,84 @@
+.conversationModal {
+
+}
+
+.conversationModal__Overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100dvw;
+    height: 100dvh;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.conversationModal__Content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--secondary-bg-dark);
+    border: 1px solid var(--primary-txt-light);
+    border-radius: 0.25rem;
+    outline: none;
+    padding: 1rem;
+    max-width: 50rem;
+    max-height: 50rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+
+.inputContainer input {
+    padding: .5rem;
+    margin-right: .25rem;
+    border-radius: 0.25rem;
+    background-color: var(--primary-bg-light);
+    border: 0.1rem solid var(--secondary-bg-dark);
+    color: var(--primary-txt-light);
+    font-size: 1.0rem;
+}
+
+.inputContainer input:hover,
+.inputContainer input:focus {
+    outline: none;
+    box-shadow: 0 0 0.25rem var(--button-bg-enabled);
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+}
+
+.buttonsContainer button{
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: none;
+    border: none;
+    fill: var(--primary-txt-light);
+}
+
+.okButton:hover {
+    fill: var(--button-bg-generate-hover);
+    cursor: pointer;
+}
+
+
+.cancelButton:hover {
+    fill: var(--button-bg-stop-hover);
+    cursor: pointer;
+}
+
+.alignCenter {
+    margin: auto;
+}

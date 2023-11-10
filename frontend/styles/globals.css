@@ -1,0 +1,55 @@
+:root {
+    --primary-yellow: #ffcd00;
+    --primary-bg-dark: #232833;
+    --primary-bg-dark-ligher: #292f3b;
+    --secondary-bg-dark: #3c4557;
+    --primary-bg-light: #2d3241;
+    --secondary-bg-light: #e5ecfa;
+    --primary-bg-dark-see-through: #232833;
+    --primary-bg-light-see-through: rgba(45, 50, 65, 0.28);
+    --primary-txt-dark: #101217;
+    --primary-txt-light: #e5ecfa;
+    --button-bg-disabled-border: rgba(128, 128, 128, 0.25);
+    --button-bg-disabled: rgba(128, 128, 128, 0.25);
+    --button-bg-enabled: var(--primary-txt-light);
+    --button-bg-generate-hover: #19c37d;
+    --button-bg-stop-hover: #dc1c1c;
+    --button-bg-regenerate-hover: #1c8ee1;
+}
+
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
+    background-color: var(--secondary-bg-dark);
+    color: var(--primary-txt-light);
+    height: 100%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
