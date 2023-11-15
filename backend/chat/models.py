@@ -24,6 +24,11 @@ class Conversation(models.Model):
     def __str__(self):
         return self.title
 
+    def version_count(self):
+        return self.versions.count()
+
+    version_count.short_description = "Number of versions"
+
 
 class Version(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
