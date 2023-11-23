@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from rest_framework import serializers
 
 from .models import Conversation, Message, Role, Version
@@ -35,6 +36,7 @@ class VersionSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True)
     active = serializers.SerializerMethodField()
     conversation_id = serializers.UUIDField(source="conversation.id")
+    modified_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Version
@@ -44,6 +46,7 @@ class VersionSerializer(serializers.ModelSerializer):
             "root_message",
             "messages",
             "active",
+            "modified_at",  # DB, read-only
             "parent_version",  # optional
         ]
         read_only_fields = ["id", "conversation"]
@@ -51,6 +54,11 @@ class VersionSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_active(obj):
         return obj == obj.conversation.active_version
+
+    @staticmethod
+    def get_modified_at(obj):
+        # last message's created_at
+        return timezone.localtime(obj.messages.last().created_at)
 
     def create(self, validated_data):
         messages_data = validated_data.pop("messages")

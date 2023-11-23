@@ -35,6 +35,7 @@ class Version:
     conversation_id: str
     root_message: str
     parent_version: str
+    modified_at: str
     messages: list["Message"]
 
     def n(self):
@@ -88,6 +89,7 @@ def get_clean_conversation(raw_conversation):
             root_message=version["root_message"],
             parent_version=version["parent_version"],
             messages=curr_messages,
+            modified_at=version["modified_at"],
         )
         versions.append(curr_version)
 
@@ -102,14 +104,6 @@ def get_clean_conversation(raw_conversation):
     return conversation
 
 
-def traverse_versions(active_version: Version, conversation: Conversation):
-    parent_version_id = active_version.parent_version
-    if parent_version_id:
-        parent_version = conversation[parent_version_id]
-
-        b = 1
-
-
 def main():
     data = fetch_data()
 
@@ -119,10 +113,10 @@ def main():
     conversation = get_clean_conversation(raw_conversation)
     curr_active_version = conversation[active_version_id]
 
-    traverse_versions(curr_active_version, conversation)
-
+    # TBD
 
     a = 1
+
 
 if __name__ == "__main__":
     main()
