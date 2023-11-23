@@ -1,5 +1,7 @@
 import os
+from bisect import insort
 from dataclasses import dataclass, field
+from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
@@ -14,15 +16,6 @@ class Conversation:
     title: str
     active_version: str
     versions: list["Version"] = field(default_factory=list)
-
-    def n(self):
-        return len(self.versions)
-
-    def add_version(self, version):
-        self.versions.append(version)
-
-    def pop_version(self):
-        self.versions.pop()
 
     def __getitem__(self, version_id: str):
         res = [version for version in self.versions if version.id == version_id]
@@ -51,9 +44,6 @@ class Version:
     messages: list["Message"]
     handled: bool = False
 
-    def n(self):
-        return len(self.messages)
-
     def __getitem__(self, message_id: str):
         res = [message for message in self.messages if message.id == message_id]
         if len(res) == 0:
@@ -69,21 +59,27 @@ class Version:
 
 
 @dataclass
+class VersionTimeId:
+    id: str
+    modified_at: str
+
+    def __lt__(self, other):
+        return datetime.fromisoformat(self.modified_at) < datetime.fromisoformat(other.modified_at)
+
+
+@dataclass
 class Message:
     id: str
     content: str
     role: str
     created_at: str
-    versions: list[str] = field(default_factory=list)
+    versions: list[VersionTimeId] = field(default_factory=list)
 
     def n(self):
         return len(self.versions)
 
     def add_version(self, version):
-        self.versions.append(version)
-
-    def pop_version(self):
-        self.versions.pop()
+        insort(self.versions, version)
 
 
 def fetch_data():
@@ -146,13 +142,16 @@ def main():
     active_version_id: str = raw_conversation["active_version"]
 
     conversation = get_clean_conversation(raw_conversation)
+    versions = conversation.versions
+    # random permute
+    versions = [versions[1], versions[0], versions[2]]
 
     curr_active_version = conversation[active_version_id]
     parent_version = conversation[curr_active_version.parent_version]
 
     curr_branch_msg, parent_branch_msg = get_branching_messages(curr_active_version, parent_version)
-    curr_branch_msg.add_version(parent_version.id)
-    parent_branch_msg.add_version(curr_active_version.id)
+    curr_branch_msg.add_version(VersionTimeId(curr_active_version.id, curr_active_version.modified_at))
+    parent_branch_msg.add_version(VersionTimeId(parent_version.id, parent_version.modified_at))
 
     curr_active_version[curr_branch_msg.id] = curr_branch_msg
     curr_active_version.handled = True
