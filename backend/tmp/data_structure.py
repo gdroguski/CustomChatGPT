@@ -42,7 +42,6 @@ class Version:
     parent_version: str
     modified_at: str
     messages: list["Message"]
-    handled: bool = False
 
     def __getitem__(self, message_id: str):
         res = [message for message in self.messages if message.id == message_id]
@@ -80,6 +79,9 @@ class Message:
 
     def add_version(self, version):
         insort(self.versions, version)
+
+    def has_version(self, version_id):
+        return any(version.id == version_id for version in self.versions)
 
 
 def fetch_data():
@@ -125,7 +127,7 @@ def get_branching_messages(curr_version: Version, parent_version: Version) -> tu
     parent_messages = parent_version.messages
 
     msg_enumerable = zip(current_messages, parent_messages)
-    n = len(current_messages)
+    n = min(len(current_messages), len(parent_messages))
     for idx in range(n - 1):
         curr_msg, parent_msg = next(msg_enumerable)
         if curr_msg.content != parent_msg.content:
@@ -135,30 +137,41 @@ def get_branching_messages(curr_version: Version, parent_version: Version) -> tu
     return curr_branch_msg, parent_branch_msg
 
 
+def get_branched_conversation(conversation: Conversation):
+    pass
+
+
 def main():
     data = fetch_data()
 
     raw_conversation = data[0]
-    active_version_id: str = raw_conversation["active_version"]
 
     conversation = get_clean_conversation(raw_conversation)
-    versions = conversation.versions
-    # random permute
-    versions = [versions[1], versions[0], versions[2]]
+    versions = [v for v in conversation.versions]
+    while versions:
+        curr_active_version = versions.pop()
+        curr_active_version_id = curr_active_version.id
 
-    curr_active_version = conversation[active_version_id]
-    parent_version = conversation[curr_active_version.parent_version]
+        curr_parent_version = conversation[curr_active_version.parent_version]
+        if not curr_parent_version:
+            continue
+        curr_parent_version_id = curr_parent_version.id
 
-    curr_branch_msg, parent_branch_msg = get_branching_messages(curr_active_version, parent_version)
-    curr_branch_msg.add_version(VersionTimeId(curr_active_version.id, curr_active_version.modified_at))
-    parent_branch_msg.add_version(VersionTimeId(parent_version.id, parent_version.modified_at))
+        curr_branch_msg, curr_parent_branch_msg = get_branching_messages(curr_active_version, curr_parent_version)
+        curr_active_version_time_id = VersionTimeId(curr_active_version_id, curr_active_version.modified_at)
+        curr_parent_version_time_id = VersionTimeId(curr_parent_version_id, curr_parent_version.modified_at)
+        if not curr_branch_msg.has_version(curr_active_version_id):
+            curr_branch_msg.add_version(curr_active_version_time_id)
+        if not curr_parent_branch_msg.has_version(curr_parent_version.id):
+            curr_parent_branch_msg.add_version(curr_parent_version_time_id)
+        curr_branch_msg.add_version(curr_parent_version_time_id)
+        curr_parent_branch_msg.add_version(curr_active_version_time_id)
 
-    curr_active_version[curr_branch_msg.id] = curr_branch_msg
-    curr_active_version.handled = True
-    parent_version[parent_branch_msg.id] = parent_branch_msg
+        curr_active_version[curr_branch_msg.id] = curr_branch_msg
+        curr_parent_version[curr_parent_branch_msg.id] = curr_parent_branch_msg
 
-    conversation[active_version_id] = curr_active_version
-    conversation[parent_version.id] = parent_version
+        conversation[curr_active_version_id] = curr_active_version
+        conversation[curr_parent_version_id] = curr_parent_version
 
     a = 1
 
