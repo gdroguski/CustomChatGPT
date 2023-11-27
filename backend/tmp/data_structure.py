@@ -11,7 +11,6 @@ load_dotenv()
 
 @dataclass
 class Conversation:
-    active: bool
     id: str
     title: str
     active_version: str
@@ -88,8 +87,6 @@ def fetch_data():
     be_host = os.getenv("BACKEND_URL")
     response = requests.get(f"{be_host}/chat/conversations/")
     result = response.json()
-    for conversation in result:
-        conversation["active"] = False
 
     return result
 
@@ -112,7 +109,6 @@ def get_clean_conversation(raw_conversation):
         versions.append(curr_version)
 
     conversation = Conversation(
-        active=raw_conversation["active"],
         id=raw_conversation["id"],
         title=raw_conversation["title"],
         active_version=raw_conversation["active_version"],
@@ -137,22 +133,19 @@ def get_branching_messages(curr_version: Version, parent_version: Version) -> tu
     return curr_branch_msg, parent_branch_msg
 
 
-def get_branched_conversation(conversation: Conversation):
-    pass
-
-
-def main():
-    data = fetch_data()
-
-    raw_conversation = data[0]
-
-    conversation = get_clean_conversation(raw_conversation)
-    versions = [v for v in conversation.versions]
+def get_branched_conversation(conversation: Conversation) -> Conversation:
+    branched_conversation = Conversation(
+        id=conversation.id,
+        title=conversation.title,
+        active_version=conversation.active_version,
+        versions=conversation.versions,
+    )
+    versions = [v for v in branched_conversation.versions]
     while versions:
         curr_active_version = versions.pop()
         curr_active_version_id = curr_active_version.id
 
-        curr_parent_version = conversation[curr_active_version.parent_version]
+        curr_parent_version = branched_conversation[curr_active_version.parent_version]
         if not curr_parent_version:
             continue
         curr_parent_version_id = curr_parent_version.id
@@ -170,8 +163,19 @@ def main():
         curr_active_version[curr_branch_msg.id] = curr_branch_msg
         curr_parent_version[curr_parent_branch_msg.id] = curr_parent_branch_msg
 
-        conversation[curr_active_version_id] = curr_active_version
-        conversation[curr_parent_version_id] = curr_parent_version
+        branched_conversation[curr_active_version_id] = curr_active_version
+        branched_conversation[curr_parent_version_id] = curr_parent_version
+
+    return branched_conversation
+
+
+def main():
+    data = fetch_data()
+
+    raw_conversation = data[0]
+
+    conversation = get_clean_conversation(raw_conversation)
+    branched_conversation = get_branched_conversation(conversation)
 
     a = 1
 
