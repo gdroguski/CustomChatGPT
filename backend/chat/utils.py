@@ -62,11 +62,11 @@ def message_has_version(message_data: OrderedDict, version_id: str) -> bool:
     return False
 
 
-def message_insort_version(message_data: OrderedDict, version_time_id: OrderedDict):
+def message_insort_version(message_data: OrderedDict, version_time_id: OrderedDict) -> None:
     insort(message_data["versions"], version_time_id, key=itemgetter("modified_at"))
 
 
-def set_conversation_version(conversation_data: OrderedDict, version_id: str, version_data: OrderedDict):
+def set_conversation_version(conversation_data: OrderedDict, version_id: str, version_data: OrderedDict) -> None:
     versions = conversation_data["versions"]
     for i, version in enumerate(versions):
         if version["id"] == version_id:
