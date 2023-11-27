@@ -14,6 +14,11 @@ class TitleSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=100, required=True)
 
 
+class VersionTimeIdSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    modified_at = serializers.DateTimeField()
+
+
 class MessageSerializer(serializers.ModelSerializer):
     role = serializers.SlugRelatedField(slug_field="name", queryset=Role.objects.all())
 
@@ -30,6 +35,11 @@ class MessageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         message = Message.objects.create(**validated_data)
         return message
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["versions"] = []  # add versions field
+        return representation
 
 
 class VersionSerializer(serializers.ModelSerializer):
