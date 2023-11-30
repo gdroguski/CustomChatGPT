@@ -72,7 +72,7 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [ ] add support for different LLMs:
   - [ ] Claude
   - [ ] LLaMa
-- [ ] add functionality for GUI to edit messages and switch between versions
+- [ ] add functionality for GUI to edit messages and switch between versions <- in progress
 - [ ] add functionality for GUI to delete messages
 - [ ] add RAG subpage
 - [ ] add work with files subpage

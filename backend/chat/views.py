@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from chat.models import Conversation, Message, Version
 from chat.serializers import ConversationSerializer, MessageSerializer, TitleSerializer, VersionSerializer
+from chat.utils import make_branched_conversation
 
 
 @api_view(["GET"])
@@ -17,6 +18,18 @@ def get_conversations(request):
     conversations = Conversation.objects.filter(deleted_at__isnull=True).order_by("-modified_at")
     serializer = ConversationSerializer(conversations, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_branched_conversations(request):
+    conversations = Conversation.objects.filter(deleted_at__isnull=True).order_by("-modified_at")
+    conversations_serializer = ConversationSerializer(conversations, many=True)
+    conversations_data = conversations_serializer.data
+
+    for conversation_data in conversations_data:
+        make_branched_conversation(conversation_data)
+
+    return Response(conversations_data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
