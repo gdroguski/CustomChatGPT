@@ -50,12 +50,15 @@ def get_branching_messages(curr_version: OrderedDict, parent_version: OrderedDic
         if curr_msg["content"] != parent_msg["content"]:
             raise Exception("Content mismatch")
 
-    curr_branch_msg, parent_branch_msg = next(msg_enumerable)
+    if not msg_enumerable:
+        curr_branch_msg, parent_branch_msg = next(msg_enumerable)
+    else:
+        curr_branch_msg, parent_branch_msg = OrderedDict(), OrderedDict()
     return curr_branch_msg, parent_branch_msg
 
 
 def message_has_version(message_data: OrderedDict, version_id: str) -> bool:
-    versions = message_data["versions"]
+    versions = message_data.get("versions", [])
     for version in versions:
         if version["id"] == version_id:
             return True
@@ -63,6 +66,8 @@ def message_has_version(message_data: OrderedDict, version_id: str) -> bool:
 
 
 def message_insort_version(message_data: OrderedDict, version_time_id: OrderedDict) -> None:
+    if not message_data:
+        return
     insort(message_data["versions"], version_time_id, key=itemgetter("modified_at"))
 
 

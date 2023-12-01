@@ -90,6 +90,54 @@ class ConversationTests(APITestCase):
         self.assertEqual(len(messages), messages_count)
         self.assertEqual(version["root_message"], self.messages[0].id)
 
+    def test_get_conversations_no_conversations(self):
+        Conversation.objects.all().delete()
+
+        url = reverse("get_conversations")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
+    def test_get_conversations_branched(self):
+        # Add a new branch to the conversation
+        root_message_id = str(self.messages[0].id)
+        url = reverse("conversation_add_version", kwargs={"pk": self.conversation.id})
+        response = self.client.post(
+            url,
+            data=json.dumps({"root_message_id": root_message_id}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        branched_version_id = response.data["id"]
+
+        url = reverse("get_branched_conversations")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check response data
+        conversation_data = response.data[0]
+        versions_data = conversation_data["versions"]
+        self.assertIn(branched_version_id, [version_data["id"] for version_data in versions_data])
+
+    def test_get_conversations_branched_no_branches(self):
+        url = reverse("get_branched_conversations")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        conversation_data = response.data[0]
+        versions_data = conversation_data["versions"]
+        self.assertEqual(len(versions_data), 1)
+
+    def test_get_conversations_branched_no_conversations(self):
+        Conversation.objects.all().delete()
+
+        url = reverse("get_branched_conversations")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data, [])
+
     def test_add_conversation_no_title_no_messages(self):
         url = reverse("add_conversation")
         response = self.client.post(url, {})
