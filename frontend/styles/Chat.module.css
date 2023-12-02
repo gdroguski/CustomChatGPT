@@ -20,29 +20,30 @@
     width: min(75%, 1500px);
 }
 
-.message {
-    max-width: 75%;
-    padding: 1.25rem;
-    /*width: fit-content;*/
-    border-radius: .5rem;
-}
-
-.message p {
+.messageContainer p,
+.messageContainer span{
     font-size: 1.05rem;
     color: var(--primary-txt-light);
     overflow-x: auto;
 }
 
-.message code {
+.messageContent {
+    max-width: 50%;
+    padding: 1.25rem;
+    /*width: fit-content;*/
+    border-radius: .5rem;
+}
+
+.messageContent code {
     color: rgb(204, 120, 50); /* dark orange */
 }
 
-.message p:not(:first-child):not(:last-child) {
+.messageContent p:not(:first-child):not(:last-child) {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
 
-.message .error {
+.messageContent .error {
     text-align: center;
     font-weight: bolder;
     color: red;
@@ -51,6 +52,10 @@
     padding: 0.5em;
     border-radius: .5em;
     margin: 0.5em 0;
+}
+
+.messageAdditionalInfo {
+    margin-top: 1em;
 }
 
 .user {

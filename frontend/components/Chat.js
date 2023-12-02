@@ -144,7 +144,7 @@ const Chat = () => {
             addMessageToConversation(prompt, UserRole)
         } else {
             newConversationMessages = currVersion.messages.slice(0, -1);
-            newMessage = {role: AssistantRole, content: "", id: generateMockId()};
+            newMessage = {role: AssistantRole, content: "", id: generateMockId()}; // TODO: think about it how to handle branching here
             addVersionToConversation();
         }
         dispatch(addMessage(newMessage));

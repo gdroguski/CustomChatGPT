@@ -21,7 +21,7 @@ def get_conversations(request):
 
 
 @api_view(["GET"])
-def get_branched_conversations(request):
+def get_conversations_branched(request):
     conversations = Conversation.objects.filter(deleted_at__isnull=True).order_by("-modified_at")
     conversations_serializer = ConversationSerializer(conversations, many=True)
     conversations_data = conversations_serializer.data

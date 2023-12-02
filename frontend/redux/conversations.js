@@ -6,7 +6,7 @@ export const fetchConversationsThunk = createAsyncThunk(
     'conversations/fetch',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get(`${backendApiBaseUrl}/chat/conversations/`);
+            const response = await axios.get(`${backendApiBaseUrl}/chat/conversations_branched/`);
             const result = response.data.map(conversation => {
                 return {
                     ...conversation,
@@ -86,6 +86,8 @@ export const addConversationMessageThunk = createAsyncThunk(
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
+            // TODO: switch them and update active ones
+            // TODO: handle add message thunk and regular for version and time and updating modified at version field
         }
     }
 );

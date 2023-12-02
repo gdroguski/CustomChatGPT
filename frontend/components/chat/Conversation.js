@@ -5,7 +5,7 @@ import Message from "./Message";
 const Conversation = ({conversation, error}) => (
     <>
         {conversation.map(message => <Message key={message.id} message={message}/>)}
-        {error && <div className={styles.message}><p className={styles.error}>{error}</p></div>}
+        {error && <div className={styles.messageContent}><p className={styles.error}>{error}</p></div>}
     </>
 );
 

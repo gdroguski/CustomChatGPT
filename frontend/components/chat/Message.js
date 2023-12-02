@@ -25,19 +25,37 @@ const Message = ({message}) => {
         return null;
     }
 
+    const renderAdditionalInfo = () => {
+        if (message.versions.length > 1) {
+            return <div className={styles.messageAdditionalInfo}>
+                <button>
+                    <span>{"<"}</span>
+                </button>
+                <span>{message.versions.length}/{message.versions.length}</span>
+                <button>
+                    <span>{">"}</span>
+                </button>
+            </div>
+        } else {
+            return null;
+        }
+    }
+
     return (
-        <div className={`${styles.messageContainer}`}>
-            <div className={`${styles.message} ${classRole}`}>
+        <div className={`${styles.messageContainer} `}>
+            <div className={`${styles.messageContent}  ${classRole}`}>
                 {parts.map((part, index) => {
                     if (index % 2 === 0) {
                         return part.split('\n').map(
-                            (line, lineIndex) => line ? <p key={lineIndex}>{isUser ? line : parseInlineCode(line)}</p> : null);
+                            (line, lineIndex) => line ?
+                                <p key={lineIndex}>{isUser ? line : parseInlineCode(line)}</p> : null);
                     } else {
                         let [language, ...codeLines] = part.split('\n');
                         let code = codeLines.join('\n');
                         return <SyntaxHighlighter key={index} language={language} style={darcula} children={code}/>
                     }
                 })}
+            {renderAdditionalInfo()}
             </div>
         </div>
     );

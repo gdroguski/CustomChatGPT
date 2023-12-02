@@ -50,7 +50,7 @@ def get_branching_messages(curr_version: OrderedDict, parent_version: OrderedDic
         if curr_msg["content"] != parent_msg["content"]:
             raise Exception("Content mismatch")
 
-    if not msg_enumerable:
+    if n > 0:
         curr_branch_msg, parent_branch_msg = next(msg_enumerable)
     else:
         curr_branch_msg, parent_branch_msg = OrderedDict(), OrderedDict()

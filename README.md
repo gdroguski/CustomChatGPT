@@ -76,3 +76,4 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [ ] add functionality for GUI to delete messages
 - [ ] add RAG subpage
 - [ ] add work with files subpage
+- [ ] prettify frontend
