@@ -1,9 +1,10 @@
-import React from 'react';
-import styles from "../../styles/Chat.module.css";
+import React, {useCallback} from 'react';
+import styles from "../../styles/Message.module.css";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {LeftArrowIcon, RightArrowIcon} from "../../assets/SVGIcon";
 import Button from "./Button";
+import {useSelector} from "react-redux";
 
 const parseInlineCode = (text) => {
     return text.split("`").map((part, index) => {
@@ -18,6 +19,8 @@ const parseInlineCode = (text) => {
 const Message = ({message}) => {
     const isUser = message.role === 'user';
     const classRole = isUser ? styles.user : styles.assistant;
+    const versions = message.versions;
+    const currVersion = useSelector(state => state.currentConversation.id);
 
     let parts;
     try {
@@ -27,25 +30,36 @@ const Message = ({message}) => {
         return null;
     }
 
+    const switchVersion = useCallback((currVersionIndex, where) => {
+        if (where === 'left') {
+            const newVersion = versions[currVersionIndex - 1];
+            console.log("left", newVersion);
+        } else {
+            const newVersion = versions[currVersionIndex + 1];
+            console.log("right", newVersion);
+        }
+    }, [versions]);
+
     const renderAdditionalInfo = () => {
         if (message.versions.length > 1) {
+            const versionIndex = versions.findIndex(version => version.id === currVersion);
+            const activeLeft = versionIndex > 0;
+            const activeRight = versionIndex < versions.length - 1;
             return (
                 <div className={styles.messageAdditionalInfo}>
                     <div className={styles.infoContainer}>
                         <Button
                             className={""}
                             SVGIcon={LeftArrowIcon}
-                            onClick={() => {
-                            }}
-                            disabled={false}
+                            onClick={() => switchVersion(versionIndex, 'left')}
+                            disabled={!activeLeft}
                         />
-                        <span>{message.versions.length}/{message.versions.length}</span>
+                        <span>{versionIndex+1}/{versions.length}</span>
                         <Button
                             className={""}
                             SVGIcon={RightArrowIcon}
-                            onClick={() => {
-                            }}
-                            disabled={false}
+                            onClick={() => switchVersion(versionIndex, 'right')}
+                            disabled={!activeRight}
                         />
                     </div>
                 </div>
