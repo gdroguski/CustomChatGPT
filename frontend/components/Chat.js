@@ -83,9 +83,6 @@ const Chat = () => {
         // TODO: conversation in history sidebar when thunk is fulfilled -> later
         // TODO: in history sidebar sort by latest edited conversation after thunk is fulfilled -> later
 
-        // TODO: figure out how to represent version now if we have multiple versions, how to display and switch between
-        // TODO: implement data structure for displaying branching points
-        // TODO: add ugly buttons to switch between versions, for now only regenerate
         // TODO: continue regenerate branches and switch between them tests
     }
 

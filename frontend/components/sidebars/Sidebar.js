@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styles from '../../styles/sidebars/Sidebar.module.css';
-import {ChevronIcon} from "../../assets/SVGIcon";
+import {SidebarChevronIcon} from "../../assets/SVGIcon";
 import Button from "../chat/Button";
 
 
@@ -28,7 +28,7 @@ const Sidebar = ({navElements, description, width = "200px"}) => {
             <div className={styles.collapseButtonContainer}>
                 <Button
                     className={`${styles.collapseButton} ${isCollapsed ? styles.mirrored : ''}`}
-                    SVGIcon={ChevronIcon}
+                    SVGIcon={SidebarChevronIcon}
                     onClick={handleClicked}
                     disabled={false}
                 >

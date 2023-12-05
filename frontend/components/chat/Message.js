@@ -2,6 +2,8 @@ import React from 'react';
 import styles from "../../styles/Chat.module.css";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
+import {LeftArrowIcon, RightArrowIcon} from "../../assets/SVGIcon";
+import Button from "./Button";
 
 const parseInlineCode = (text) => {
     return text.split("`").map((part, index) => {
@@ -27,15 +29,27 @@ const Message = ({message}) => {
 
     const renderAdditionalInfo = () => {
         if (message.versions.length > 1) {
-            return <div className={styles.messageAdditionalInfo}>
-                <button>
-                    <span>{"<"}</span>
-                </button>
-                <span>{message.versions.length}/{message.versions.length}</span>
-                <button>
-                    <span>{">"}</span>
-                </button>
-            </div>
+            return (
+                <div className={styles.messageAdditionalInfo}>
+                    <div className={styles.infoContainer}>
+                        <Button
+                            className={""}
+                            SVGIcon={LeftArrowIcon}
+                            onClick={() => {
+                            }}
+                            disabled={false}
+                        />
+                        <span>{message.versions.length}/{message.versions.length}</span>
+                        <Button
+                            className={""}
+                            SVGIcon={RightArrowIcon}
+                            onClick={() => {
+                            }}
+                            disabled={false}
+                        />
+                    </div>
+                </div>
+            )
         } else {
             return null;
         }
@@ -55,7 +69,7 @@ const Message = ({message}) => {
                         return <SyntaxHighlighter key={index} language={language} style={darcula} children={code}/>
                     }
                 })}
-            {renderAdditionalInfo()}
+                {renderAdditionalInfo()}
             </div>
         </div>
     );

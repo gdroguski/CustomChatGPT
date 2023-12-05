@@ -58,6 +58,35 @@
     margin-top: 1em;
 }
 
+.infoContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.infoContainer span {
+    font-size: 1rem;
+    color: var(--primary-txt-light);
+    margin: 0;
+}
+
+.infoContainer button {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    fill: var(--primary-txt-light);
+}
+
+.infoContainer button:hover {
+    fill: var(--primary-yellow);
+    box-shadow: 0 0 0.25rem var(--primary-yellow);
+}
+
 .user {
     position: relative;
     align-self: flex-end;
