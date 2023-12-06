@@ -132,7 +132,6 @@ export const switchConversationVersionThunk = createAsyncThunk(
         try {
             await axios.put(
                 `${backendApiBaseUrl}/chat/conversations/${conversationId}/switch_version/${versionId}/`);
-            console.log("\tswitchVersion conversation response"); // TODO: remove this line
             return {conversationId, versionId};
         } catch (error) {
             return thunkAPI.rejectWithValue({error: error.message});
@@ -204,6 +203,19 @@ const allConversationsSlice = createSlice({
                 // add the new version to the conversation's versions array
                 conversation.versions.push({...action.payload, active: true});
                 console.log('\taddConversationVersionThunk.fulfilled', action.payload, conversation);
+            })
+            .addCase(switchConversationVersionThunk.fulfilled, (state, action) => {
+                const conversationId = action.payload.conversationId;
+                const versionId = action.payload.versionId;
+
+                // Find the conversation that contains the version to update
+                const conversation = state.find(conversation => conversation.id === conversationId);
+                // make all versions inactive
+                conversation.versions.forEach(version => version.active = false);
+                // make the new version active
+                const version = conversation.versions.find(version => version.id === versionId);
+                version.active = true;
+                console.log('\tswitchConversationVersionThunk.fulfilled', action.payload, conversation);
             })
     }
 });

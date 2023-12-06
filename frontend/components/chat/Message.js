@@ -4,7 +4,9 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {LeftArrowIcon, RightArrowIcon} from "../../assets/SVGIcon";
 import Button from "./Button";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {switchConversationVersionThunk} from "../../redux/conversations";
+import {setConversation} from "../../redux/currentConversation";
 
 const parseInlineCode = (text) => {
     return text.split("`").map((part, index) => {
@@ -20,7 +22,10 @@ const Message = ({message}) => {
     const isUser = message.role === 'user';
     const classRole = isUser ? styles.user : styles.assistant;
     const versions = message.versions;
-    const currVersion = useSelector(state => state.currentConversation.id);
+
+    const dispatch = useDispatch();
+    const currVersion = useSelector(state => state.currentConversation);
+    const currConversation = useSelector(state => state.allConversations.find(c => c.id === currVersion.conversation_id));
 
     let parts;
     try {
@@ -31,18 +36,26 @@ const Message = ({message}) => {
     }
 
     const switchVersion = useCallback((currVersionIndex, where) => {
+        let newVersionId;
         if (where === 'left') {
-            const newVersion = versions[currVersionIndex - 1];
-            console.log("left", newVersion);
+            newVersionId = versions[currVersionIndex - 1].id;
+            console.log("left", newVersionId, currConversation.id);
         } else {
-            const newVersion = versions[currVersionIndex + 1];
-            console.log("right", newVersion);
+            newVersionId = versions[currVersionIndex + 1].id;
+            console.log("right", newVersionId, currConversation.id);
         }
+
+        dispatch(switchConversationVersionThunk({conversationId: currConversation.id, versionId: newVersionId}));
+        let newVersion = currConversation.versions.find(version => version.id === newVersionId);
+        newVersion = {...newVersion, title: currConversation.title};
+        console.log("newVersion", newVersion);
+        dispatch(setConversation(newVersion));
+
     }, [versions]);
 
     const renderAdditionalInfo = () => {
         if (message.versions.length > 1) {
-            const versionIndex = versions.findIndex(version => version.id === currVersion);
+            const versionIndex = versions.findIndex(version => version.id === currVersion.id);
             const activeLeft = versionIndex > 0;
             const activeRight = versionIndex < versions.length - 1;
             return (
