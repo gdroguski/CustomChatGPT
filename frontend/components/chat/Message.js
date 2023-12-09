@@ -54,32 +54,33 @@ const Message = ({message}) => {
     }, [versions]);
 
     const renderAdditionalInfo = () => {
-        if (message.versions.length > 1) {
-            const versionIndex = versions.findIndex(version => version.id === currVersion.id);
-            const activeLeft = versionIndex > 0;
-            const activeRight = versionIndex < versions.length - 1;
-            return (
-                <div className={styles.messageAdditionalInfo}>
-                    <div className={styles.infoContainer}>
-                        <Button
-                            className={""}
-                            SVGIcon={LeftArrowIcon}
-                            onClick={() => switchVersion(versionIndex, 'left')}
-                            disabled={!activeLeft}
-                        />
-                        <span>{versionIndex+1}/{versions.length}</span>
-                        <Button
-                            className={""}
-                            SVGIcon={RightArrowIcon}
-                            onClick={() => switchVersion(versionIndex, 'right')}
-                            disabled={!activeRight}
-                        />
-                    </div>
-                </div>
-            )
-        } else {
+        const versions = message?.versions;
+        if (!versions || versions.length <= 1) {
             return null;
         }
+
+        const versionIndex = versions.findIndex(version => version.id === currVersion.id);
+        const activeLeft = versionIndex > 0;
+        const activeRight = versionIndex < versions.length - 1;
+        return (
+            <div className={styles.messageAdditionalInfo}>
+                <div className={styles.infoContainer}>
+                    <Button
+                        className={""}
+                        SVGIcon={LeftArrowIcon}
+                        onClick={() => switchVersion(versionIndex, 'left')}
+                        disabled={!activeLeft}
+                    />
+                    <span>{versionIndex + 1}/{versions.length}</span>
+                    <Button
+                        className={""}
+                        SVGIcon={RightArrowIcon}
+                        onClick={() => switchVersion(versionIndex, 'right')}
+                        disabled={!activeRight}
+                    />
+                </div>
+            </div>
+        )
     }
 
     return (
