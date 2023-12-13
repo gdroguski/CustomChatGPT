@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from chat.models import Conversation, Message, Version
 from chat.serializers import ConversationSerializer, MessageSerializer, TitleSerializer, VersionSerializer
-from chat.utils import make_branched_conversation
+from chat.utils.branching import make_branched_conversation
 
 
 @api_view(["GET"])
@@ -30,6 +30,20 @@ def get_conversations_branched(request):
         make_branched_conversation(conversation_data)
 
     return Response(conversations_data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_conversation_branched(request, pk):
+    try:
+        conversation = Conversation.objects.get(pk=pk)
+    except Conversation.DoesNotExist:
+        return Response({"detail": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    conversation_serializer = ConversationSerializer(conversation)
+    conversation_data = conversation_serializer.data
+    make_branched_conversation(conversation_data)
+
+    return Response(conversation_data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

@@ -86,8 +86,6 @@ export const addConversationMessageThunk = createAsyncThunk(
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
-            // TODO: switch them and update active ones
-            // TODO: handle add message thunk and regular for version and time and updating modified at version field
         }
     }
 );
