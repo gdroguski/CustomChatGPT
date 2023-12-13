@@ -73,6 +73,7 @@ The idea behind this project is to experiment with Next.js and create a personal
   - [ ] Claude
   - [ ] LLaMa
 - [ ] add functionality for GUI to edit messages and switch between versions <- in progress
-- [ ] add functionality for GUI to delete messages
 - [ ] add RAG subpage
 - [ ] add work with files subpage
+- [ ] add registration, login, authorization
+- [ ] user separation
