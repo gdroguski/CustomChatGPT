@@ -171,8 +171,10 @@ def conversation_add_version(request, pk):
 
     # Copy messages before root_message to new_version
     messages_before_root = Message.objects.filter(version=version, created_at__lt=root_message.created_at)
-    for message in messages_before_root:
-        Message.objects.create(content=message.content, role=message.role, version=new_version)
+    new_messages = [
+        Message(content=message.content, role=message.role, version=new_version) for message in messages_before_root
+    ]
+    Message.objects.bulk_create(new_messages)
 
     # Set the new version as the current version
     conversation.active_version = new_version
