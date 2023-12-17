@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {
-    addConversationMessageThunk,
-    addVersionAndUpdateConversationThunk,
+    addConversationMessageThunk, addConversationVersionThunk,
+    getConversationBranchedThunk,
     createConversationThunk
 } from "./conversations";
 import {AssistantRole, MockId, MockTitle} from "../utils/constants";
@@ -53,12 +53,10 @@ const currentConversationSlice = createSlice({
                 console.log('\taddConversationMessageThunk.fulfilled', action.payload);
                 state.messages = state.messages.map(message => isMockId(message.id) ? action.payload.message : message);
             })
-            .addCase(addVersionAndUpdateConversationThunk.fulfilled, (state, action) => {
-                console.log('\taddVersionAndUpdateConversationThunk.fulfilled curr convo', action.payload);
+            .addCase(getConversationBranchedThunk.fulfilled, (state, action) => {
+                console.log('\tgetConversationBranchedThunk.fulfilled curr convo', action.payload);
                 const latestVersion = action.payload.versions.find(v => v.active);
-                const newState = {...latestVersion, title: action.payload.title};
-                console.log('\taddVersionAndUpdateConversationThunk.fulfilled curr convo new state', newState);
-                return {...latestVersion, title: state.title};
+                return {...latestVersion, title: action.payload.title};
             })
     }
 });

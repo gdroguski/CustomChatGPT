@@ -9,7 +9,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {addMessage, changeTitle} from "../redux/currentConversation";
 import {
     addConversationMessageThunk,
-    addVersionAndUpdateConversationThunk,
+    addConversationVersionThunk,
+    getConversationBranchedThunk,
     createConversationThunk,
     updateConversation
 } from "../redux/conversations";
@@ -141,8 +142,9 @@ const Chat = () => {
             newConversationMessages = [...currVersion.messages, newMessage];
             addMessageToConversation(prompt, UserRole)
         } else {
+             // TODO: think about it how to handle branching here for edited user's messages
             newConversationMessages = currVersion.messages.slice(0, -1);
-            newMessage = {role: AssistantRole, content: "", id: generateMockId()}; // TODO: think about it how to handle branching here
+            newMessage = {role: AssistantRole, content: "", id: generateMockId()};
             versionUpdatePromise = addVersionToConversation();
         }
         dispatch(addMessage(newMessage));
@@ -167,9 +169,13 @@ const Chat = () => {
                 if (done) {
                     processText(data);
                     if (versionUpdatePromise) {
+                        const conversationId = currVersion.conversation_id
                         await versionUpdatePromise;
+                        await addMessageToConversation(data, AssistantRole);
+                        dispatch(getConversationBranchedThunk({ conversationId }));
+                    } else {
+                        addMessageToConversation(data, AssistantRole);
                     }
-                    addMessageToConversation(data, AssistantRole);
                     break;
                 }
                 data += decoder.decode(value, {stream: true});
@@ -197,8 +203,6 @@ const Chat = () => {
     const regenerateResponse = () => {
         const lastUserMessage = [...currVersion.messages].reverse().find(message => message.role === UserRole);
         const lastAssistantMessage = [...currVersion.messages].reverse().find(message => message.role === AssistantRole);
-        // TODO: something is fishy with redux state after adding version, after fetch is fine, maybe should change
-        // TODO: something here in messages to point out correct branching message
 
         if (!lastUserMessage) return;
 
@@ -212,16 +216,16 @@ const Chat = () => {
 
     const addMessageToConversation = (message, role) => {
         if (currVersion.title === MockTitle)
-            return;
+            return Promise.resolve();
         const newMessage = {role: role, content: message};
-        dispatch(addConversationMessageThunk({conversationId: currVersion.conversation_id, message: newMessage}));
+        return dispatch(addConversationMessageThunk({conversationId: currVersion.conversation_id, message: newMessage}));
     }
 
     const addVersionToConversation = async () => {
         if (currVersion.title === MockTitle)
             return;
         const lastMessageId = currVersion.messages[currVersion.messages.length - 1].id;
-        await dispatch(addVersionAndUpdateConversationThunk({
+        await dispatch(addConversationVersionThunk({
             conversationId: currVersion.conversation_id,
             rootMessageId: lastMessageId
         }));

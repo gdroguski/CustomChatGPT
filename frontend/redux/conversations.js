@@ -90,21 +90,32 @@ export const addConversationMessageThunk = createAsyncThunk(
     }
 );
 
-
-export const addVersionAndUpdateConversationThunk = createAsyncThunk(
-    'conversations/addVersionAndUpdateConversation',
+export const addConversationVersionThunk = createAsyncThunk(
+    'conversations/addVersion',
     async ({conversationId, rootMessageId}, thunkAPI) => {
         try {
-            console.time("addVersion"); // Start timer for addVersion
-            console.log("\tcreateVersionUp conversation request", {conversationId, rootMessageId}); // TODO: remove this line
-            const versionResponse = await axios.post(
+            console.time("addVersion");
+            console.log("\tcreateVersion conversation request", {conversationId, rootMessageId}); // TODO: remove this line
+            const response = await axios.post(
                 `${backendApiBaseUrl}/chat/conversations/${conversationId}/add_version/`,
                 {root_message_id: rootMessageId}
             );
-            console.log("\tcreateVersionUp conversation response", versionResponse.data); // TODO: remove this line
-            console.timeEnd("addVersion"); // End timer for addVersion
+            console.log("\tcreateVersion conversation response", response.data); // TODO: remove this line
+            console.timeEnd("addVersion");
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue({error: error.message});
+        }
+    }
+);
 
-            console.time("fetchBranched"); // Start timer for fetchBranched
+
+export const getConversationBranchedThunk = createAsyncThunk(
+    'conversations/getBranched',
+    async ({conversationId}, thunkAPI) => {
+        try {
+            console.log("\tfetch branched conversation request", {conversationId}); // TODO: remove this line
+            console.time("fetchBranched");
             const response = await axios.get(
                 `${backendApiBaseUrl}/chat/conversation_branched/${conversationId}/`);
             console.log("\tfetch branched conversation response 1", response.data); // TODO: remove this line
@@ -112,8 +123,7 @@ export const addVersionAndUpdateConversationThunk = createAsyncThunk(
                 ...response.data,
                 active: true
             };
-            console.timeEnd("fetchBranched"); // End timer for fetchBranched
-
+            console.timeEnd("fetchBranched");
             console.log("\tfetch branched conversation response", result); // TODO: remove this line
             return result;
         } catch (error) {
@@ -182,31 +192,34 @@ const allConversationsSlice = createSlice({
                 const conversationId = action.payload.conversation_id;
                 const newMessage = action.payload.message;
 
-                // Find the conversation that contains the version to update
                 const conversation = state.find(conversation => conversation.id === conversationId);
-                // Find the version to update within the conversation
                 const version = conversation.versions.find(version => version.active);
 
-                // Add the new message to the version's messages array
                 version.messages.push(newMessage);
             })
-            .addCase(addVersionAndUpdateConversationThunk.fulfilled, (state, action) => {
+            .addCase(addConversationVersionThunk.fulfilled, (state, action) => {
                 const conversationId = action.payload.conversation_id;
+                const conversation = state.find(conversation => conversation.id === conversationId);
+                conversation.versions.forEach(version => version.active = false);
+                conversation.versions.push({...action.payload, active: true});
+                console.log('\taddConversationVersionThunk.fulfilled', action.payload, conversation);
+            })
+            .addCase(getConversationBranchedThunk.fulfilled, (state, action) => {
+                const conversationId = action.payload.id;
                 const conversationIndex = state.findIndex(conversation => conversation.id === conversationId);
                 state[conversationIndex] = action.payload;
-                console.log('\taddVersionAndUpdateConversationThunk.fulfilled convo', action.payload);
+
+                console.log('\tgetConversationBranchedThunk.fulfilled convo', action.payload);
             })
             .addCase(switchConversationVersionThunk.fulfilled, (state, action) => {
                 const conversationId = action.payload.conversationId;
                 const versionId = action.payload.versionId;
 
-                // Find the conversation that contains the version to update
                 const conversation = state.find(conversation => conversation.id === conversationId);
-                // make all versions inactive
                 conversation.versions.forEach(version => version.active = false);
-                // make the new version active
                 const version = conversation.versions.find(version => version.id === versionId);
                 version.active = true;
+
                 console.log('\tswitchConversationVersionThunk.fulfilled', action.payload, conversation);
             })
     }
