@@ -10,8 +10,8 @@ import {addMessage, changeTitle} from "../redux/currentConversation";
 import {
     addConversationMessageThunk,
     addConversationVersionThunk,
-    getConversationBranchedThunk,
     createConversationThunk,
+    getConversationBranchedThunk,
     updateConversation
 } from "../redux/conversations";
 import {setStreaming} from "../redux/streaming";
@@ -83,8 +83,6 @@ const Chat = () => {
 
         // TODO: conversation in history sidebar when thunk is fulfilled -> later
         // TODO: in history sidebar sort by latest edited conversation after thunk is fulfilled -> later
-
-        // TODO: continue regenerate branches and switch between them tests
     }
 
     const handleInputChanged = (e) => {
@@ -142,7 +140,7 @@ const Chat = () => {
             newConversationMessages = [...currVersion.messages, newMessage];
             addMessageToConversation(prompt, UserRole)
         } else {
-             // TODO: think about it how to handle branching here for edited user's messages
+            // TODO: think about it how to handle branching here for edited user's messages
             newConversationMessages = currVersion.messages.slice(0, -1);
             newMessage = {role: AssistantRole, content: "", id: generateMockId()};
             versionUpdatePromise = addVersionToConversation();
@@ -172,7 +170,7 @@ const Chat = () => {
                         const conversationId = currVersion.conversation_id
                         await versionUpdatePromise;
                         await addMessageToConversation(data, AssistantRole);
-                        dispatch(getConversationBranchedThunk({ conversationId }));
+                        dispatch(getConversationBranchedThunk({conversationId}));
                     } else {
                         addMessageToConversation(data, AssistantRole);
                     }
@@ -193,6 +191,7 @@ const Chat = () => {
     };
 
     const abortResponse = () => {
+        // TODO: useState for creating version so that abort will wait for DB uptade as in generateResponse
         abortController.current.abort();
         abortController.current = new AbortController();
         dispatch(setStreaming(false));
@@ -218,7 +217,10 @@ const Chat = () => {
         if (currVersion.title === MockTitle)
             return Promise.resolve();
         const newMessage = {role: role, content: message};
-        return dispatch(addConversationMessageThunk({conversationId: currVersion.conversation_id, message: newMessage}));
+        return dispatch(addConversationMessageThunk({
+            conversationId: currVersion.conversation_id,
+            message: newMessage
+        }));
     }
 
     const addVersionToConversation = async () => {
