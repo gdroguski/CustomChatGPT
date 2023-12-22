@@ -39,6 +39,8 @@ The idea behind this project is to experiment with Next.js and create a personal
 ![streaming](images/streaming.png)
 ## Title edition
 ![title edition](images/edit_chat.png)
+## Switching versions (only assistant for now)
+![switching versions](images/switching_versions.png)
 ## Admin page
 ![admin page](images/admin.png)
 
