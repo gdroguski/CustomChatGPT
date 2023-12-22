@@ -29,6 +29,7 @@ const Chat = () => {
     const [userInput, setUserInput] = useState('');
     const [canStop, setCanStop] = useState(false);
     const [canRegenerate, setCanRegenerate] = useState(false);
+    const [versionUpdatePromise, setVersionUpdatePromise] = useState(null);
     const [error, setError] = useState(null);
     const [chosenModel, setChosenModel] = useState(GPT35);
 
@@ -56,6 +57,26 @@ const Chat = () => {
     useEffect(() => {
         console.log('conversation on useEffect end isStreaming', currVersion);
     }, [isStreaming]);
+
+    useEffect(() => {
+        let isCancelled = false;
+
+        const checkVersionUpdatePromise = async () => {
+            if (versionUpdatePromise) {
+                await versionUpdatePromise;
+                if (!isCancelled) {
+                    setVersionUpdatePromise(null);
+                }
+            }
+        };
+
+        checkVersionUpdatePromise().catch(console.error);
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [versionUpdatePromise]);
+
 
     const generateTitle = async () => {
         const lastTwoMessages = currVersion.messages.slice(-2);
@@ -134,7 +155,6 @@ const Chat = () => {
 
     const generateResponse = async (prompt = inputRef.current.textContent, replaceLast = false) => {
         let newConversationMessages, newMessage;
-        let versionUpdatePromise = null;
         if (!replaceLast) {
             newMessage = {role: UserRole, content: prompt, id: generateMockId()};
             newConversationMessages = [...currVersion.messages, newMessage];
@@ -143,7 +163,7 @@ const Chat = () => {
             // TODO: think about it how to handle branching here for edited user's messages
             newConversationMessages = currVersion.messages.slice(0, -1);
             newMessage = {role: AssistantRole, content: "", id: generateMockId()};
-            versionUpdatePromise = addVersionToConversation();
+            setVersionUpdatePromise(addVersionToConversation());
         }
         dispatch(addMessage(newMessage));
 
@@ -169,6 +189,7 @@ const Chat = () => {
                     if (versionUpdatePromise) {
                         const conversationId = currVersion.conversation_id
                         await versionUpdatePromise;
+                        setVersionUpdatePromise(null);
                         await addMessageToConversation(data, AssistantRole);
                         dispatch(getConversationBranchedThunk({conversationId}));
                     } else {
@@ -190,13 +211,17 @@ const Chat = () => {
         }
     };
 
-    const abortResponse = () => {
-        // TODO: useState for creating version so that abort will wait for DB uptade as in generateResponse
+    const abortResponse = async () => {
         abortController.current.abort();
         abortController.current = new AbortController();
         dispatch(setStreaming(false));
         const lastMessage = currVersion.messages[currVersion.messages.length - 1];
-        addMessageToConversation(lastMessage.content, AssistantRole)
+        if (versionUpdatePromise) {
+            await versionUpdatePromise;
+            setVersionUpdatePromise(null);
+        }
+        await addMessageToConversation(lastMessage.content, AssistantRole)
+        dispatch(getConversationBranchedThunk({conversationId: currVersion.conversation_id}));
     }
 
     const regenerateResponse = () => {
