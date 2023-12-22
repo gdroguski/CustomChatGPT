@@ -11,6 +11,7 @@ import {
     addConversationMessageThunk,
     addConversationVersionThunk,
     createConversationThunk,
+    getConversationBranchedThunk,
     updateConversation
 } from "../redux/conversations";
 import {setStreaming} from "../redux/streaming";
@@ -28,6 +29,7 @@ const Chat = () => {
     const [userInput, setUserInput] = useState('');
     const [canStop, setCanStop] = useState(false);
     const [canRegenerate, setCanRegenerate] = useState(false);
+    const [versionUpdatePromise, setVersionUpdatePromise] = useState(null);
     const [error, setError] = useState(null);
     const [chosenModel, setChosenModel] = useState(GPT35);
 
@@ -56,6 +58,26 @@ const Chat = () => {
         console.log('conversation on useEffect end isStreaming', currVersion);
     }, [isStreaming]);
 
+    useEffect(() => {
+        let isCancelled = false;
+
+        const checkVersionUpdatePromise = async () => {
+            if (versionUpdatePromise) {
+                await versionUpdatePromise;
+                if (!isCancelled) {
+                    setVersionUpdatePromise(null);
+                }
+            }
+        };
+
+        checkVersionUpdatePromise().catch(console.error);
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [versionUpdatePromise]);
+
+
     const generateTitle = async () => {
         const lastTwoMessages = currVersion.messages.slice(-2);
         const lastUserMessage = lastTwoMessages.find(message => message.role === UserRole).content;
@@ -82,11 +104,6 @@ const Chat = () => {
 
         // TODO: conversation in history sidebar when thunk is fulfilled -> later
         // TODO: in history sidebar sort by latest edited conversation after thunk is fulfilled -> later
-
-        // TODO: figure out how to represent version now if we have multiple versions, how to display and switch between
-        // TODO: implement data structure for displaying branching points
-        // TODO: add ugly buttons to switch between versions, for now only regenerate
-        // TODO: continue regenerate branches and switch between them tests
     }
 
     const handleInputChanged = (e) => {
@@ -143,9 +160,10 @@ const Chat = () => {
             newConversationMessages = [...currVersion.messages, newMessage];
             addMessageToConversation(prompt, UserRole)
         } else {
+            // TODO: think about it how to handle branching here for edited user's messages
             newConversationMessages = currVersion.messages.slice(0, -1);
             newMessage = {role: AssistantRole, content: "", id: generateMockId()};
-            addVersionToConversation();
+            setVersionUpdatePromise(addVersionToConversation());
         }
         dispatch(addMessage(newMessage));
 
@@ -168,7 +186,15 @@ const Chat = () => {
                 const {done, value} = await reader.read();
                 if (done) {
                     processText(data);
-                    addMessageToConversation(data, AssistantRole);
+                    if (versionUpdatePromise) {
+                        const conversationId = currVersion.conversation_id
+                        await versionUpdatePromise;
+                        setVersionUpdatePromise(null);
+                        await addMessageToConversation(data, AssistantRole);
+                        dispatch(getConversationBranchedThunk({conversationId}));
+                    } else {
+                        addMessageToConversation(data, AssistantRole);
+                    }
                     break;
                 }
                 data += decoder.decode(value, {stream: true});
@@ -185,16 +211,22 @@ const Chat = () => {
         }
     };
 
-    const abortResponse = () => {
+    const abortResponse = async () => {
         abortController.current.abort();
         abortController.current = new AbortController();
         dispatch(setStreaming(false));
         const lastMessage = currVersion.messages[currVersion.messages.length - 1];
-        addMessageToConversation(lastMessage.content, AssistantRole)
+        if (versionUpdatePromise) {
+            await versionUpdatePromise;
+            setVersionUpdatePromise(null);
+        }
+        await addMessageToConversation(lastMessage.content, AssistantRole)
+        dispatch(getConversationBranchedThunk({conversationId: currVersion.conversation_id}));
     }
 
     const regenerateResponse = () => {
         const lastUserMessage = [...currVersion.messages].reverse().find(message => message.role === UserRole);
+        const lastAssistantMessage = [...currVersion.messages].reverse().find(message => message.role === AssistantRole);
 
         if (!lastUserMessage) return;
 
@@ -208,16 +240,19 @@ const Chat = () => {
 
     const addMessageToConversation = (message, role) => {
         if (currVersion.title === MockTitle)
-            return;
+            return Promise.resolve();
         const newMessage = {role: role, content: message};
-        dispatch(addConversationMessageThunk({conversationId: currVersion.conversation_id, message: newMessage}));
+        return dispatch(addConversationMessageThunk({
+            conversationId: currVersion.conversation_id,
+            message: newMessage
+        }));
     }
 
-    const addVersionToConversation = () => {
+    const addVersionToConversation = async () => {
         if (currVersion.title === MockTitle)
             return;
         const lastMessageId = currVersion.messages[currVersion.messages.length - 1].id;
-        dispatch(addConversationVersionThunk({
+        await dispatch(addConversationVersionThunk({
             conversationId: currVersion.conversation_id,
             rootMessageId: lastMessageId
         }));

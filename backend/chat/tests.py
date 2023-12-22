@@ -23,19 +23,19 @@ class ConversationTests(APITestCase):
 
         self.single_user_message = {
             "role": "user",
-            "content": "Siema co tam?",
+            "content": "Hi what up?",
         }
         self.single_assistant_message = {
             "role": "assistant",
-            "content": "Siema jak Ci mogę pomóc?",
+            "content": "Hello, how can I help you?",
         }
         self.single_user_second_message = {
             "role": "user",
-            "content": "Siema co tam drugi raz?",
+            "content": "Hi what up for the second time",
         }
         self.single_assistant_second_message = {
             "role": "assistant",
-            "content": "Siema jak Ci mogę pomóc drugi raz?",
+            "content": "Hello, how can I help you fella?",
         }
 
         self.conversation = Conversation.objects.create(title=self.test_title)
@@ -137,6 +137,57 @@ class ConversationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertEqual(response.data, [])
+
+    def test_get_conversation_branched(self):
+        # Add a new branch to the conversation
+        root_message_id = str(self.messages[0].id)
+        url = reverse("conversation_add_version", kwargs={"pk": self.conversation.id})
+        response = self.client.post(
+            url,
+            data=json.dumps({"root_message_id": root_message_id}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        branched_version_id = response.data["id"]
+
+        url = reverse("get_branched_conversation", kwargs={"pk": self.conversation.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check response data
+        conversation_data = response.data
+        versions_data = conversation_data["versions"]
+        self.assertIn(branched_version_id, [version_data["id"] for version_data in versions_data])
+
+    def test_get_conversation_branched_invalid_id(self):
+        url = reverse("get_branched_conversation", kwargs={"pk": self.nonexistent_uuid})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_conversation_branched_no_branches(self):
+        url = reverse("get_branched_conversation", kwargs={"pk": self.conversation.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        conversation_data = response.data
+        versions_data = conversation_data["versions"]
+        self.assertEqual(len(versions_data), 1)
+
+    def test_get_conversation_branched_multiple_branches(self):
+        # Create branch 1
+        url = reverse("conversation_add_version", kwargs={"pk": self.conversation.id})
+        self.client.post(url, data={"root_message_id": self.messages[0].id})
+
+        # Create branch 2
+        self.client.post(url, data={"root_message_id": self.messages[1].id})
+
+        url = reverse("get_branched_conversation", kwargs={"pk": self.conversation.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        conversation_data = response.data
+        versions_data = conversation_data["versions"]
+        self.assertEqual(len(versions_data), 3)
 
     def test_add_conversation_no_title_no_messages(self):
         url = reverse("add_conversation")
