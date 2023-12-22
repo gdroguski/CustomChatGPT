@@ -187,14 +187,14 @@ const Chat = () => {
                 if (done) {
                     processText(data);
                     if (versionUpdatePromise) {
-                        const conversationId = currVersion.conversation_id
                         await versionUpdatePromise;
-                        setVersionUpdatePromise(null);
                         await addMessageToConversation(data, AssistantRole);
-                        dispatch(getConversationBranchedThunk({conversationId}));
+                        setVersionUpdatePromise(null);
                     } else {
                         addMessageToConversation(data, AssistantRole);
                     }
+                    if (replaceLast)
+                        dispatch(getConversationBranchedThunk({conversationId: currVersion.conversation_id}));
                     break;
                 }
                 data += decoder.decode(value, {stream: true});
