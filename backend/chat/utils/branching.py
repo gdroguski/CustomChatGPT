@@ -102,6 +102,7 @@ def _get_branching_messages(curr_version: OrderedDict, parent_version: OrderedDi
         The branching messages in the current version and the parent version.
     """
     current_messages = curr_version["messages"]
+    curr_version_root_msg = str(curr_version["root_message"])
     parent_messages = parent_version["messages"]
 
     msg_enumerable = zip(current_messages, parent_messages)
@@ -109,8 +110,10 @@ def _get_branching_messages(curr_version: OrderedDict, parent_version: OrderedDi
     for idx in range(n - 1):
         curr_msg, parent_msg = next(msg_enumerable)
         if curr_msg["content"] != parent_msg["content"]:
-            # case where there are multiple branched versions
-            return curr_msg, parent_msg
+            if parent_msg["id"] == curr_version_root_msg:
+                return curr_msg, parent_msg
+            else:
+                raise Exception("Content mismatch between current message and parent message")
 
     if n > 0:
         curr_branch_msg, parent_branch_msg = next(msg_enumerable)
@@ -225,33 +228,43 @@ def _get_version_time_id_chain(list_of_versions: list[list[OrderedDict]]) -> lis
     """
     node_info = {}
     graph = {}
-    for pair in list_of_versions:
-        node, next_node = pair[0]["id"], pair[1]
-        node_info[node] = pair[0]
-        node_info[next_node["id"]] = next_node
-        if node in graph:
-            graph[node].add(next_node["id"])
-        else:
-            graph[node] = {next_node["id"]}
+
+    # Create a graph where each node is connected to its subsequent node in each sublist
+    for sublist in list_of_versions:
+        for i in range(len(sublist) - 1):
+            pair = sublist[i], sublist[i + 1]
+            node, next_node = pair[0]["id"], pair[1]
+            node_info[node] = pair[0]
+            node_info[next_node["id"]] = next_node
+            if node in graph:
+                graph[node].add(next_node["id"])
+            else:
+                graph[node] = {next_node["id"]}
 
     all_nodes = set(node_info.keys())
     start_nodes = all_nodes - set(n for sublist in graph.values() for n in sublist)
+
+    # Instead of creating chains from each start node, create a set of visited nodes
+    # and only start a new chain if the node hasn't been visited yet
+    visited = set()
     chains = []
 
     for start in start_nodes:
-        stack = [(start, [node_info[start]])]
-        seen = set()
+        if start in visited:
+            continue
+
+        chain = []
+        stack = [start]
+
         while stack:
-            node, path = stack.pop()
-            if node not in graph:  # if it has no children
-                chains.append(path)
-            else:
-                for next_node in graph[node]:
-                    new_path = path + [node_info[next_node]]
-                    path_tuple = tuple(p["id"] for p in new_path)  # convert path to tuple to hash
-                    if path_tuple not in seen:
-                        stack.append((next_node, new_path))
-                        seen.add(path_tuple)
+            node = stack.pop()
+            if node not in visited:
+                chain.append(node_info[node])
+                visited.add(node)
+                if node in graph:
+                    stack.extend(graph[node])
+
+        chains.append(chain)
 
     return chains
 
