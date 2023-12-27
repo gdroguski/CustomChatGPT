@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="32"
+   fill="#000000"
+   viewBox="0 0 128 128"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="pencil-simple.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1017"
+     id="namedview6"
+     showgrid="false"
+     scale-x="1"
+     inkscape:zoom="9.391262"
+     inkscape:cx="17.056274"
+     inkscape:cy="22.647922"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4"
+     inkscape:document-rotation="0" />
+  <path
+     d="M 111.65523,38.687084 89.315409,16.34227 a 7.9999334,7.9999334 0 0 0 -11.314903,0 L 16.346019,78.001757 a 7.929934,7.929934 0 0 0 -2.34498,5.654953 v 22.34481 a 7.9999334,7.9999334 0 0 0 7.999933,7.99994 h 22.344814 a 7.929934,7.929934 0 0 0 5.654953,-2.34498 L 111.65523,50.00199 a 7.9999334,7.9999334 0 0 0 0,-11.314906 z M 44.345786,106.00152 H 22.000972 V 83.65671 L 66.000606,39.657076 88.345419,62.00189 Z m 49.654583,-49.659583 -22.34481,-22.339814 11.9999,-11.9999 22.344811,22.339814 z"
+     id="path2"
+     style="stroke-width:0.499996" />
+</svg>

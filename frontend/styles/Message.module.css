@@ -16,7 +16,6 @@
 .messageContent {
     max-width: 50%;
     padding: 1.25rem;
-    /*width: fit-content;*/
     border-radius: .5rem;
 }
 
@@ -38,6 +37,24 @@
     padding: 0.5em;
     border-radius: .5em;
     margin: 0.5em 0;
+}
+
+.messageContent textarea {
+    min-width: max-content;
+    max-width: 100%;
+    width: max-content;
+    border: none;
+    resize: horizontal;
+    word-break: break-all;
+    background-color: var(--primary-bg-dark);
+    color: var(--primary-txt-light);
+    font-size: 1.05rem;
+    font-family: inherit;
+    overflow: hidden;
+}
+
+.messageContent textarea:focus {
+    outline: none;
 }
 
 .messageAdditionalInfo {
@@ -77,18 +94,48 @@
     cursor: default;
 }
 
+.icon svg {
+    visibility: hidden;
+}
+
+.alwaysVisible svg {
+    visibility: visible;
+}
+
+.user:hover .hoverVisible svg,
+.assistant:hover .hoverVisible svg {
+    visibility: visible;
+}
+
+.confirmationButtons {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+
+.confirmationButtons button {
+    width: 24px;
+    height: 24px;
+}
+
+.confirmationButtons .okButton:hover {
+    fill: var(--button-bg-generate-hover);
+    cursor: pointer;
+}
+
+.confirmationButtons .cancelButton:hover {
+    fill: var(--button-bg-stop-hover);
+    cursor: pointer;
+}
+
 .user {
     position: relative;
     align-self: flex-end;
     background-color: var(--primary-bg-dark);
     box-shadow: 0 0 0.5rem var(--primary-bg-dark);
-}
-
-.assistant {
-    position: relative;
-    align-self: flex-start;
-    background-color: var(--primary-bg-light);
-    box-shadow: 0 0 0.5rem var(--primary-bg-light);
 }
 
 .user::after {
@@ -104,6 +151,13 @@
     width: 4rem;
     height: 4rem;
     object-fit: contain;
+}
+
+.assistant {
+    position: relative;
+    align-self: flex-start;
+    background-color: var(--primary-bg-light);
+    box-shadow: 0 0 0.5rem var(--primary-bg-light);
 }
 
 .assistant::after {

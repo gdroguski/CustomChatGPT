@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "../../../styles/sidebars/HistorySidebar.module.css";
-import {ChatIcon, DeleteIcon, EditIcon} from "../../../assets/SVGIcon";
+import {ChatIcon, DeleteIcon, EditTitleIcon} from "../../../assets/SVGIcon";
 
 const HistoryItem = ({
                               conversation,
@@ -38,7 +38,7 @@ const HistoryItem = ({
                             handleOpenEditModal(conversation.id);
                         }}
                     >
-                        <EditIcon/>
+                        <EditTitleIcon/>
                     </button>
                     <button
                         className={disabledClass}

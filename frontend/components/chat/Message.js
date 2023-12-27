@@ -1,8 +1,8 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import styles from "../../styles/Message.module.css";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
-import {LeftArrowIcon, RightArrowIcon} from "../../assets/SVGIcon";
+import {EditMessageIcon, LeftArrowIcon, NoIcon, RightArrowIcon, YesIcon} from "../../assets/SVGIcon";
 import Button from "./Button";
 import {useDispatch, useSelector} from "react-redux";
 import {switchConversationVersionThunk} from "../../redux/conversations";
@@ -26,6 +26,15 @@ const Message = ({message}) => {
     const dispatch = useDispatch();
     const currVersion = useSelector(state => state.currentConversation);
     const currConversation = useSelector(state => state.allConversations.find(c => c.id === currVersion.conversation_id));
+
+    const [editing, setEditing] = useState(false);
+    const [editedMessage, setEditedMessage] = useState('');
+    const [numRows, setNumRows] = useState(1);
+
+    useEffect(() => {
+        setNumRows(editedMessage.split('\n').length);
+        console.log("editedMessage", editedMessage);
+    }, [editedMessage]);
 
     let parts;
     try {
@@ -53,7 +62,7 @@ const Message = ({message}) => {
 
     }, [versions]);
 
-    const renderAdditionalInfo = () => {
+    const renderAdditionalInfoAssistant = () => {
         const versions = message?.versions;
         if (!versions || versions.length <= 1) {
             return null;
@@ -66,14 +75,14 @@ const Message = ({message}) => {
             <div className={styles.messageAdditionalInfo}>
                 <div className={styles.infoContainer}>
                     <Button
-                        className={""}
+                        className={`${styles.icon} ${activeLeft ? styles.alwaysVisible : ''}`}
                         SVGIcon={LeftArrowIcon}
                         onClick={() => switchVersion(versionIndex, 'left')}
                         disabled={!activeLeft}
                     />
                     <span>{versionIndex + 1}/{versions.length}</span>
                     <Button
-                        className={""}
+                        className={`${styles.icon} ${activeRight ? styles.alwaysVisible : ''}`}
                         SVGIcon={RightArrowIcon}
                         onClick={() => switchVersion(versionIndex, 'right')}
                         disabled={!activeRight}
@@ -83,21 +92,81 @@ const Message = ({message}) => {
         )
     }
 
+    const renderAdditionalInfoUser = () => {
+        if (!editing) {
+            return (
+                <div className={styles.messageAdditionalInfo}>
+                    <div className={styles.infoContainer}>
+                        <Button
+                            className={`${styles.icon} ${editing ? '' : styles.hoverVisible}`}
+                            SVGIcon={EditMessageIcon}
+                            onClick={() => {
+                                setEditing(true);
+                                setEditedMessage(message.content);
+                                console.log(`Edit message ${message.id}`)
+                            }}
+                            disabled={editing}
+                        />
+                    </div>
+                </div>
+            )
+        } else {
+            const canConfirm = editedMessage.trim() !== '' && editedMessage !== message.content;
+            const commonClass = `${styles.icon} ${styles.alwaysVisible}`;
+            // TODO: handle thunks for editing messages here and in chat.js, refactor this to other components
+
+            return (
+                <div className={styles.messageAdditionalInfo}>
+                    <div className={styles.infoContainer}>
+                        <div className={styles.confirmationButtons}>
+                            <Button
+                                className={`${commonClass} ${canConfirm ? styles.okButton : ''}`}
+                                SVGIcon={YesIcon}
+                                onClick={() => {
+                                    setEditing(false);
+                                    console.log(`Save edit message ${message.id}`)
+                                }}
+                                disabled={!canConfirm || !editing}
+                            />
+                            <Button
+                                className={`${commonClass} ${styles.cancelButton}`}
+                                SVGIcon={NoIcon}
+                                onClick={() => {
+                                    setEditing(false);
+                                    console.log(`Cancel edit message ${message.id}`)
+                                }}
+                                disabled={!editing}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+    }
+
     return (
         <div className={`${styles.messageContainer} `}>
             <div className={`${styles.messageContent}  ${classRole}`}>
-                {parts.map((part, index) => {
-                    if (index % 2 === 0) {
-                        return part.split('\n').map(
-                            (line, lineIndex) => line ?
-                                <p key={lineIndex}>{isUser ? line : parseInlineCode(line)}</p> : null);
-                    } else {
-                        let [language, ...codeLines] = part.split('\n');
-                        let code = codeLines.join('\n');
-                        return <SyntaxHighlighter key={index} language={language} style={darcula} children={code}/>
-                    }
-                })}
-                {renderAdditionalInfo()}
+                {editing ? (
+                    <textarea
+                        value={editedMessage}
+                        onChange={(e) => setEditedMessage(e.target.value)}
+                        rows={numRows}
+                    />
+                ) : (
+                    parts.map((part, index) => {
+                        if (index % 2 === 0) {
+                            return part.split('\n').map(
+                                (line, lineIndex) => line ?
+                                    <p key={lineIndex}>{isUser ? line : parseInlineCode(line)}</p> : null);
+                        } else {
+                            let [language, ...codeLines] = part.split('\n');
+                            let code = codeLines.join('\n');
+                            return <SyntaxHighlighter key={index} language={language} style={darcula} children={code}/>
+                        }
+                    })
+                )}
+                {isUser ? renderAdditionalInfoUser() : renderAdditionalInfoAssistant()}
             </div>
         </div>
     );
