@@ -2,11 +2,10 @@ import React, {useCallback, useEffect, useState} from 'react';
 import styles from "../../styles/Message.module.css";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
-import {EditMessageIcon, LeftArrowIcon, NoIcon, RightArrowIcon, YesIcon} from "../../assets/SVGIcon";
-import Button from "./Button";
 import {useDispatch, useSelector} from "react-redux";
 import {switchConversationVersionThunk} from "../../redux/conversations";
 import {setConversation} from "../../redux/currentConversation";
+import {AdditionalInfoAssistant, AdditionalInfoUser} from "./MessageAdditionalInfo";
 
 const parseInlineCode = (text) => {
     return text.split("`").map((part, index) => {
@@ -62,85 +61,21 @@ const Message = ({message}) => {
 
     }, [versions]);
 
-    const renderAdditionalInfoAssistant = () => {
-        const versions = message?.versions;
-        if (!versions || versions.length <= 1) {
-            return null;
-        }
-
-        const versionIndex = versions.findIndex(version => version.id === currVersion.id);
-        const activeLeft = versionIndex > 0;
-        const activeRight = versionIndex < versions.length - 1;
-        return (
-            <div className={styles.messageAdditionalInfo}>
-                <div className={styles.infoContainer}>
-                    <Button
-                        className={`${styles.icon} ${activeLeft ? styles.alwaysVisible : ''}`}
-                        SVGIcon={LeftArrowIcon}
-                        onClick={() => switchVersion(versionIndex, 'left')}
-                        disabled={!activeLeft}
-                    />
-                    <span>{versionIndex + 1}/{versions.length}</span>
-                    <Button
-                        className={`${styles.icon} ${activeRight ? styles.alwaysVisible : ''}`}
-                        SVGIcon={RightArrowIcon}
-                        onClick={() => switchVersion(versionIndex, 'right')}
-                        disabled={!activeRight}
-                    />
-                </div>
-            </div>
-        )
-    }
-
-    const renderAdditionalInfoUser = () => {
-        if (!editing) {
+    const renderAdditionalInfo = () => {
+        if (isUser) {
             return (
-                <div className={styles.messageAdditionalInfo}>
-                    <div className={styles.infoContainer}>
-                        <Button
-                            className={`${styles.icon} ${editing ? '' : styles.hoverVisible}`}
-                            SVGIcon={EditMessageIcon}
-                            onClick={() => {
-                                setEditing(true);
-                                setEditedMessage(message.content);
-                                console.log(`Edit message ${message.id}`)
-                            }}
-                            disabled={editing}
-                        />
-                    </div>
-                </div>
-            )
+                <AdditionalInfoUser
+                    editing={editing} setEditing={setEditing}
+                    editedMessage={editedMessage} setEditedMessage={setEditedMessage}
+                    message={message}
+                />
+            );
         } else {
-            const canConfirm = editedMessage.trim() !== '' && editedMessage !== message.content;
-            const commonClass = `${styles.icon} ${styles.alwaysVisible}`;
-            // TODO: handle thunks for editing messages here and in chat.js, refactor this to other components
-
             return (
-                <div className={styles.messageAdditionalInfo}>
-                    <div className={styles.infoContainer}>
-                        <div className={styles.confirmationButtons}>
-                            <Button
-                                className={`${commonClass} ${canConfirm ? styles.okButton : ''}`}
-                                SVGIcon={YesIcon}
-                                onClick={() => {
-                                    setEditing(false);
-                                    console.log(`Save edit message ${message.id}`)
-                                }}
-                                disabled={!canConfirm || !editing}
-                            />
-                            <Button
-                                className={`${commonClass} ${styles.cancelButton}`}
-                                SVGIcon={NoIcon}
-                                onClick={() => {
-                                    setEditing(false);
-                                    console.log(`Cancel edit message ${message.id}`)
-                                }}
-                                disabled={!editing}
-                            />
-                        </div>
-                    </div>
-                </div>
-            )
+                <AdditionalInfoAssistant
+                    message={message} switchVersion={switchVersion} currVersionId={currVersion.id}
+                />
+            );
         }
     }
 
@@ -166,7 +101,7 @@ const Message = ({message}) => {
                         }
                     })
                 )}
-                {isUser ? renderAdditionalInfoUser() : renderAdditionalInfoAssistant()}
+                {renderAdditionalInfo()}
             </div>
         </div>
     );
