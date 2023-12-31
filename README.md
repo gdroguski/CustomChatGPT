@@ -29,6 +29,7 @@ The idea behind this project is to experiment with Next.js and create a personal
 - Title edition for given conversation
 - Deletion of given conversation
 - Assistant messages regeneration
+- User messages edition
 - Models selection: currently gpt3.5 or gpt4
 - Custom django admin page for managing conversations, versions and messages
 
@@ -39,8 +40,8 @@ The idea behind this project is to experiment with Next.js and create a personal
 ![streaming](images/streaming.png)
 ## Title edition
 ![title edition](images/edit_chat.png)
-## Switching versions (only assistant for now)
-![switching versions](images/switching_versions.png)
+## Switching versions and editing messages
+![switching versions and editing messages](images/switching_versions_editing.png)
 ## Admin page
 ![admin page](images/admin.png)
 
@@ -74,7 +75,7 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [ ] add support for different LLMs:
   - [ ] Claude
   - [ ] LLaMa
-- [x] add functionality for GUI to edit messages and switch between versions <- done, add print screens
+- [x] add functionality for GUI to edit messages and switch between versions
 - [ ] add RAG subpage
 - [ ] add work with files subpage
 - [ ] add registration, login, authorization
