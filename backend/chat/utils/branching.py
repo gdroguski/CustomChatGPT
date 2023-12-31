@@ -158,7 +158,7 @@ def _message_insort_version(message_data: OrderedDict, version_time_id: OrderedD
     """
     if not message_data:
         return
-    insort(message_data["versions"], version_time_id, key=itemgetter("modified_at"))
+    insort(message_data["versions"], version_time_id, key=itemgetter("created_at"))
 
 
 def _set_conversation_version(conversation_data: OrderedDict, version_id: str, version_data: OrderedDict) -> None:

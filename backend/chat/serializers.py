@@ -16,7 +16,7 @@ class TitleSerializer(serializers.Serializer):
 
 class VersionTimeIdSerializer(serializers.Serializer):
     id = serializers.UUIDField()
-    modified_at = serializers.DateTimeField()
+    created_at = serializers.DateTimeField()
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -46,7 +46,7 @@ class VersionSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True)
     active = serializers.SerializerMethodField()
     conversation_id = serializers.UUIDField(source="conversation.id")
-    modified_at = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Version
@@ -56,7 +56,7 @@ class VersionSerializer(serializers.ModelSerializer):
             "root_message",
             "messages",
             "active",
-            "modified_at",  # DB, read-only
+            "created_at",  # DB, read-only
             "parent_version",  # optional
         ]
         read_only_fields = ["id", "conversation"]
@@ -66,10 +66,10 @@ class VersionSerializer(serializers.ModelSerializer):
         return obj == obj.conversation.active_version
 
     @staticmethod
-    def get_modified_at(obj):
-        if obj.messages.count() == 0:
-            return None
-        return timezone.localtime(obj.messages.last().created_at)
+    def get_created_at(obj):
+        if obj.root_message is None:
+            return timezone.localtime(obj.conversation.created_at)
+        return timezone.localtime(obj.root_message.created_at)
 
     def create(self, validated_data):
         messages_data = validated_data.pop("messages")
