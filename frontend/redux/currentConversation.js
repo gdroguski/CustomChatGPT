@@ -1,9 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {
-    addConversationMessageThunk, addConversationVersionThunk,
-    getConversationBranchedThunk,
-    createConversationThunk
-} from "./conversations";
+import {addConversationMessageThunk, createConversationThunk, getConversationBranchedThunk} from "./conversations";
 import {AssistantRole, MockId, MockTitle} from "../utils/constants";
 import {isMockId} from "../utils/functions";
 
@@ -26,7 +22,7 @@ const currentConversationSlice = createSlice({
             const lastMessage = state.messages[state.messages.length - 1];
             // If the last message was from the assistant, replace it as it is streaming.
             if (lastMessage && lastMessage.role === AssistantRole && action.payload.role === AssistantRole) {
-                state.messages[state.messages.length - 1] = action.payload; // TODO: here we could handle user role editions
+                state.messages[state.messages.length - 1] = action.payload;
             } else {
                 state.messages.push(action.payload);
             }
@@ -51,7 +47,15 @@ const currentConversationSlice = createSlice({
             })
             .addCase(addConversationMessageThunk.fulfilled, (state, action) => {
                 console.log('\taddConversationMessageThunk.fulfilled', action.payload);
-                state.messages = state.messages.map(message => isMockId(message.id) ? action.payload.message : message);
+                if (action.payload.hidden)
+                    return;
+
+                const lastMessage = state.messages[state.messages.length - 1];
+                if (lastMessage && lastMessage.role === action.payload.role) {
+                    state.messages[state.messages.length - 1] = action.payload.message;
+                } else {
+                    state.messages.push(action.payload.message);
+                }
             })
             .addCase(getConversationBranchedThunk.fulfilled, (state, action) => {
                 console.log('\tgetConversationBranchedThunk.fulfilled curr convo', action.payload);

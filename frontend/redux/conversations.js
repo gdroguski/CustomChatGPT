@@ -74,7 +74,7 @@ export const deleteConversationThunk = createAsyncThunk(
 
 export const addConversationMessageThunk = createAsyncThunk(
     'conversations/addMessage',
-    async ({conversationId, message}, thunkAPI) => {
+    async ({conversationId, message, hidden}, thunkAPI) => {
         try {
             console.log("\taddMessage conversation request", {conversationId, message}); // TODO: remove this line
             const response = await axios.post(
@@ -83,7 +83,7 @@ export const addConversationMessageThunk = createAsyncThunk(
                     content: message.content
                 });
             console.log("\taddMessage conversation response", response.data); // TODO: remove this line
-            return response.data;
+            return {...response.data, role: message.role, hidden: hidden};
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -151,11 +151,6 @@ const allConversationsSlice = createSlice({
     name: 'allConversations',
     initialState: [],
     reducers: {
-        addConversation: (state, {payload}) => {
-            console.log('\taddConversation', payload);
-            state.forEach(conversation => conversation.active = false);
-            state.push(payload);
-        },
         setActiveConversation: (state, {payload}) => {
             console.log('\tsetActiveConversation', payload);
             if (!payload) {
@@ -226,7 +221,6 @@ const allConversationsSlice = createSlice({
 });
 
 export const {
-    addConversation,
     setActiveConversation,
     updateConversation,
 } = allConversationsSlice.actions;

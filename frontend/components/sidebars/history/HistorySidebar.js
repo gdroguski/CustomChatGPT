@@ -4,7 +4,6 @@ import styles from "../../../styles/sidebars/HistorySidebar.module.css";
 import {useDispatch, useSelector} from "react-redux";
 import {setConversation, startNewConversation} from "../../../redux/currentConversation";
 import {
-    addConversation,
     setActiveConversation,
     changeConversationTitleThunk,
     deleteConversationThunk,

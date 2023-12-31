@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styles from "../styles/Chat.module.css";
 import {postChatConversation, postChatTitle} from "../api";
 import Conversation from "./chat/Conversation";
@@ -6,7 +6,7 @@ import Button from "./chat/Button";
 import {RegenerateIcon, StartIcon, StopIcon} from "../assets/SVGInputIcon";
 import ChoiceButton from "./ModelButton";
 import {useDispatch, useSelector} from "react-redux";
-import {addMessage, changeTitle} from "../redux/currentConversation";
+import {addMessage, changeTitle, setConversation} from "../redux/currentConversation";
 import {
     addConversationMessageThunk,
     addConversationVersionThunk,
@@ -15,7 +15,7 @@ import {
     updateConversation
 } from "../redux/conversations";
 import {setStreaming} from "../redux/streaming";
-import {AssistantRole, GPT35, MockTitle, UserRole} from "../utils/constants";
+import {AssistantRole, GPT35, MessageTypes, MockTitle, UserRole} from "../utils/constants";
 import {generateMockId} from "../utils/functions";
 
 
@@ -153,17 +153,37 @@ const Chat = () => {
         setChosenModel(model);
     }
 
-    const generateResponse = async (prompt = inputRef.current.textContent, replaceLast = false) => {
+    const generateResponse = async (prompt = inputRef.current.textContent, messageType = MessageTypes.UserMessage, messageId = null) => {
         let newConversationMessages, newMessage;
-        if (!replaceLast) {
-            newMessage = {role: UserRole, content: prompt, id: generateMockId()};
-            newConversationMessages = [...currVersion.messages, newMessage];
-            addMessageToConversation(prompt, UserRole)
-        } else {
-            // TODO: think about it how to handle branching here for edited user's messages
-            newConversationMessages = currVersion.messages.slice(0, -1);
-            newMessage = {role: AssistantRole, content: "", id: generateMockId()};
-            setVersionUpdatePromise(addVersionToConversation());
+        const regenerateMessage = messageType === MessageTypes.RegenerateAssistantMessage || messageType === MessageTypes.RegenerateUserMessage;
+
+        switch (messageType) {
+            case MessageTypes.UserMessage:
+                newMessage = {role: UserRole, content: prompt, id: generateMockId()};
+                newConversationMessages = [...currVersion.messages, newMessage];
+                addMessageToConversation(prompt, UserRole)
+                break;
+            case MessageTypes.RegenerateAssistantMessage:
+                newMessage = {role: AssistantRole, content: "", id: generateMockId()};
+                newConversationMessages = currVersion.messages.slice(0, -1);
+                setVersionUpdatePromise(addVersionToConversation());
+                break;
+            case MessageTypes.RegenerateUserMessage:
+                newMessage = {role: AssistantRole, content: "", id: generateMockId()};
+                const messageIndex = currVersion.messages.findIndex(message => message.id === messageId);
+                const messages = currVersion.messages.slice(0, messageIndex + 1);
+                messages[messageIndex] = {role: UserRole, content: prompt, id: generateMockId()}
+                const newVersion = {...currVersion, messages: messages};
+                dispatch(setConversation(newVersion));
+
+                newConversationMessages = newVersion.messages;
+                setVersionUpdatePromise(
+                    addVersionToConversation(messageId)
+                        .then(() => addMessageToConversation(prompt, UserRole, true))
+                );
+                break;
+            default:
+                throw new Error(`Unknown message type: ${messageType}`);
         }
         dispatch(addMessage(newMessage));
 
@@ -193,7 +213,7 @@ const Chat = () => {
                     } else {
                         addMessageToConversation(data, AssistantRole);
                     }
-                    if (replaceLast)
+                    if (regenerateMessage)
                         dispatch(getConversationBranchedThunk({conversationId: currVersion.conversation_id}));
                     break;
                 }
@@ -224,44 +244,53 @@ const Chat = () => {
         dispatch(getConversationBranchedThunk({conversationId: currVersion.conversation_id}));
     }
 
-    const regenerateResponse = () => {
+    const regenerateAssistantResponse = () => {
         const lastUserMessage = [...currVersion.messages].reverse().find(message => message.role === UserRole);
-        const lastAssistantMessage = [...currVersion.messages].reverse().find(message => message.role === AssistantRole);
 
         if (!lastUserMessage) return;
 
-        generateResponse(lastUserMessage.content, true).catch(console.error);
+        generateResponse(lastUserMessage.content, MessageTypes.RegenerateAssistantMessage).catch(console.error);
     };
+
+    const regenerateUserResponse = useCallback((messageId, newContent) => {
+        console.log("messageEditConfirm", messageId, newContent);
+
+        generateResponse(newContent, MessageTypes.RegenerateUserMessage, messageId).catch(console.error);
+    }, [currVersion.messages]);
 
     const processText = (data) => {
         const newMessage = {role: AssistantRole, content: data, id: generateMockId()};
         dispatch(addMessage(newMessage));
     };
 
-    const addMessageToConversation = (message, role) => {
+    const addMessageToConversation = (message, role, hidden = false) => {
         if (currVersion.title === MockTitle)
             return Promise.resolve();
         const newMessage = {role: role, content: message};
         return dispatch(addConversationMessageThunk({
             conversationId: currVersion.conversation_id,
-            message: newMessage
+            message: newMessage,
+            hidden: hidden
         }));
     }
 
-    const addVersionToConversation = async () => {
+    const addVersionToConversation = async (rootMessageId = null) => {
         if (currVersion.title === MockTitle)
             return;
-        const lastMessageId = currVersion.messages[currVersion.messages.length - 1].id;
+        if (!rootMessageId)
+            rootMessageId = currVersion.messages[currVersion.messages.length - 1].id;
+
         await dispatch(addConversationVersionThunk({
             conversationId: currVersion.conversation_id,
-            rootMessageId: lastMessageId
+            rootMessageId: rootMessageId
         }));
     }
 
     return (
         <div className={styles.chatContainer} ref={chatContainerRef}>
             <div className={styles.conversationContainer}>
-                <Conversation conversation={currVersion.messages} error={error}/>
+                <Conversation messages={currVersion.messages} regenerateUserResponse={regenerateUserResponse}
+                              error={error}/>
             </div>
             <div className={styles.chatInputContainer}>
                 <div className={styles.choiceButtonContainer}>
@@ -292,7 +321,7 @@ const Chat = () => {
                     <Button
                         className={styles.regenerateButton}
                         SVGIcon={RegenerateIcon}
-                        onClick={regenerateResponse}
+                        onClick={regenerateAssistantResponse}
                         disabled={!canRegenerate}
                     />
                 </div>

@@ -1,10 +1,11 @@
 import React from 'react';
-import styles from "../../styles/Chat.module.css";
+import styles from "../../styles/Message.module.css";
 import Message from "./Message";
 
-const Conversation = ({conversation, error}) => (
+const Conversation = ({messages, regenerateUserResponse, error}) => (
     <>
-        {conversation.map(message => <Message key={message.id} message={message}/>)}
+        {messages.map(message => <Message key={message.id} message={message}
+                                          regenerateUserResponse={regenerateUserResponse}/>)}
         {error && <div className={styles.messageContent}><p className={styles.error}>{error}</p></div>}
     </>
 );

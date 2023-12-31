@@ -5,7 +5,7 @@ import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {useDispatch, useSelector} from "react-redux";
 import {switchConversationVersionThunk} from "../../redux/conversations";
 import {setConversation} from "../../redux/currentConversation";
-import {AdditionalInfoAssistant, AdditionalInfoUser} from "./MessageAdditionalInfo";
+import {AdditionalInfoVersions, AdditionalInfoEdit, AdditionalInfo} from "./MessageAdditionalInfo";
 
 const parseInlineCode = (text) => {
     return text.split("`").map((part, index) => {
@@ -17,7 +17,7 @@ const parseInlineCode = (text) => {
     });
 };
 
-const Message = ({message}) => {
+const Message = ({message, regenerateUserResponse}) => {
     const isUser = message.role === 'user';
     const classRole = isUser ? styles.user : styles.assistant;
     const versions = message.versions;
@@ -25,6 +25,7 @@ const Message = ({message}) => {
     const dispatch = useDispatch();
     const currVersion = useSelector(state => state.currentConversation);
     const currConversation = useSelector(state => state.allConversations.find(c => c.id === currVersion.conversation_id));
+    const isStreaming = useSelector(state => state.streaming);
 
     const [editing, setEditing] = useState(false);
     const [editedMessage, setEditedMessage] = useState('');
@@ -32,7 +33,6 @@ const Message = ({message}) => {
 
     useEffect(() => {
         setNumRows(editedMessage.split('\n').length);
-        console.log("editedMessage", editedMessage);
     }, [editedMessage]);
 
     let parts;
@@ -62,22 +62,22 @@ const Message = ({message}) => {
     }, [versions]);
 
     const renderAdditionalInfo = () => {
-        if (isUser) {
-            return (
-                <AdditionalInfoUser
-                    editing={editing} setEditing={setEditing}
-                    editedMessage={editedMessage} setEditedMessage={setEditedMessage}
-                    message={message}
-                />
-            );
-        } else {
-            return (
-                <AdditionalInfoAssistant
-                    message={message} switchVersion={switchVersion} currVersionId={currVersion.id}
-                />
-            );
-        }
-    }
+        const editProps = {
+            editing,
+            setEditing,
+            editedMessage,
+            setEditedMessage,
+            messageEditConfirm: regenerateUserResponse,
+        };
+
+        const versionProps = {
+            switchVersion,
+            currVersionId: currVersion.id,
+        };
+
+        return <AdditionalInfo isUser={isUser} message={message} isStreaming={isStreaming} editProps={editProps} versionsProps={versionProps}/>;
+    };
+
 
     return (
         <div className={`${styles.messageContainer} `}>
