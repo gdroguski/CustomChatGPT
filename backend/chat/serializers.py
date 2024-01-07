@@ -118,6 +118,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             "title",  # required
             "active_version",
             "versions",  # optional
+            "modified_at",  # DB, read-only
         ]
 
     def create(self, validated_data):

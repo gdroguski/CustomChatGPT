@@ -101,9 +101,6 @@ const Chat = () => {
         console.log('gen title newConversation', newConversation);
         dispatch(changeTitle(title));
         dispatch(createConversationThunk(newConversation));
-
-        // TODO: conversation in history sidebar when thunk is fulfilled -> later
-        // TODO: in history sidebar sort by latest edited conversation after thunk is fulfilled -> later
     }
 
     const handleInputChanged = (e) => {

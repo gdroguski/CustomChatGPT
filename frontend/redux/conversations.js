@@ -1,6 +1,8 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios from "axios";
 import {backendApiBaseUrl} from "../config";
+import {setStreaming} from "./streaming";
+import {setLoading} from "./loading";
 
 export const fetchConversationsThunk = createAsyncThunk(
     'conversations/fetch',
@@ -18,6 +20,8 @@ export const fetchConversationsThunk = createAsyncThunk(
             return result;
         } catch (error) {
             return thunkAPI.rejectWithValue({error: error.message});
+        } finally {
+            thunkAPI.dispatch(setLoading(false));
         }
     });
 
@@ -158,12 +162,16 @@ const allConversationsSlice = createSlice({
                 return;
             }
 
-            state.forEach(conversation => {
-                conversation.active = conversation.id === payload.id;
-            });
+            return state.map(conversation => ({
+                ...conversation,
+                active: conversation.id === payload
+            }));
         },
         updateConversation: (state, {payload}) => {
             const conversationIndex = state.findIndex(conversation => conversation.id === payload.id);
+            if (conversationIndex === -1) {
+                return;
+            }
             state[conversationIndex] = payload;
         },
     },
@@ -216,6 +224,13 @@ const allConversationsSlice = createSlice({
                 version.active = true;
 
                 console.log('\tswitchConversationVersionThunk.fulfilled', action.payload, conversation);
+            })
+            .addCase(setStreaming, (state, action) => {
+                const activeConversationIndex = state.findIndex(conversation => conversation.active);
+                const activeConversation = state[activeConversationIndex];
+                const modifiedAt = new Date().toISOString();
+
+                state[activeConversationIndex] = {...activeConversation, modified_at: modifiedAt};
             })
     }
 });

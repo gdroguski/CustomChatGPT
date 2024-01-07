@@ -19,6 +19,7 @@ const HistorySidebar = () => {
     const isStreaming = useSelector(state => state.streaming);
     const dispatch = useDispatch();
 
+    const [hasConversations, setHasConversations] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(currConversation.id);
@@ -31,6 +32,12 @@ const HistorySidebar = () => {
         dispatch(fetchConversationsThunk());
     }, [dispatch]);
 
+    useEffect(() => {
+        if (allConversations.length > 0) {
+            setHasConversations(true);
+        }
+    }, [allConversations]);
+
     const handleOpenEditModal = (conversationId) => {
         const currentTitle = allConversations.find(c => c.id === conversationId).title;
         setEditTitle(currentTitle);
@@ -40,7 +47,7 @@ const HistorySidebar = () => {
     const handleCloseEditModal = (newTitle) => {
         setIsEditModalOpen(false);
         if (newTitle) {
-            dispatch(changeConversationTitleThunk({ id: selectedId, newTitle }));
+            dispatch(changeConversationTitleThunk({id: selectedId, newTitle}));
             setEditTitle('');
         }
     }
@@ -51,7 +58,7 @@ const HistorySidebar = () => {
     }
 
     const handleDeleteConversation = () => {
-        dispatch(deleteConversationThunk({ id: selectedId }));
+        dispatch(deleteConversationThunk({id: selectedId}));
         setIsDeleteModalOpen(false);
         dispatch(startNewConversation());
     }
@@ -91,7 +98,7 @@ const HistorySidebar = () => {
 
                 <div className={styles.historyContainer}>
                     <ul>
-                        {allConversations.slice(0).map((conversation) => (
+                        {allConversations.slice(0).sort((a, b) => new Date(b.modified_at) - new Date(a.modified_at)).map((conversation) => (
                             <HistoryItem
                                 key={conversation.active_version}
                                 conversation={conversation}
@@ -115,7 +122,7 @@ const HistorySidebar = () => {
                 </div>
             </div>
         )
-    }, [allConversations, currConversation, isStreaming, isEditModalOpen, isDeleteModalOpen, selectedId]);
+    }, [hasConversations, isStreaming, isEditModalOpen, isDeleteModalOpen, selectedId]);
 
     const description = "History";
 

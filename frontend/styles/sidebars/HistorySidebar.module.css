@@ -67,12 +67,13 @@
     background-color: var(--button-bg-disabled);
     border-color: var(--button-bg-disabled-border);
 }
+
 .conversationItem.disabled:hover {
     color: var(--primary-txt-light);
     cursor: default;
 }
 
-.conversationButton{
+.conversationButton {
     padding: 0.5rem;
     text-align: left;
     font-size: 1rem;
@@ -89,12 +90,16 @@
 }
 
 .chatIconContainer {
-    width: 16px;
-    height: 16px;
     margin-right: 0.25em;
+    display: flex;
 }
 
-.chatIconContainer.disabled{
+.chatIconContainer svg {
+    width: 16px;
+    height: 16px;
+}
+
+.chatIconContainer.disabled {
     fill: var(--primary-yellow);
 }
 
