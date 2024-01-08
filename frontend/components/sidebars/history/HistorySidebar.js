@@ -19,7 +19,7 @@ const HistorySidebar = () => {
     const isStreaming = useSelector(state => state.streaming);
     const dispatch = useDispatch();
 
-    const [hasConversations, setHasConversations] = useState(false);
+    const conversationsCount = allConversations.length;
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(currConversation.id);
@@ -31,12 +31,6 @@ const HistorySidebar = () => {
     useEffect(() => {
         dispatch(fetchConversationsThunk());
     }, [dispatch]);
-
-    useEffect(() => {
-        if (allConversations.length > 0) {
-            setHasConversations(true);
-        }
-    }, [allConversations]);
 
     const handleOpenEditModal = (conversationId) => {
         const currentTitle = allConversations.find(c => c.id === conversationId).title;
@@ -122,7 +116,7 @@ const HistorySidebar = () => {
                 </div>
             </div>
         )
-    }, [hasConversations, isStreaming, isEditModalOpen, isDeleteModalOpen, selectedId]);
+    }, [conversationsCount, isStreaming, isEditModalOpen, isDeleteModalOpen, selectedId]);
 
     const description = "History";
 
