@@ -78,5 +78,4 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [x] add functionality for GUI to edit messages and switch between versions
 - [ ] add RAG subpage
 - [ ] add work with files subpage
-- [ ] add registration, login, authorization
-- [ ] user separation
+- [ ] add registration, login, authorization, users <- in progress
