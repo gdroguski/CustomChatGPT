@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styles from '../../styles/sidebars/Sidebar.module.css';
 import {SidebarChevronIcon} from "../../assets/SVGIcon";
-import Button from "../chat/Button";
+import SVGButton from "../common/SVGButton";
 
 
 /**
@@ -26,14 +26,14 @@ const Sidebar = ({navElements, description, width = "200px"}) => {
                 {navElements()}
             </nav>
             <div className={styles.collapseButtonContainer}>
-                <Button
+                <SVGButton
                     className={`${styles.collapseButton} ${isCollapsed ? styles.mirrored : ''}`}
                     SVGIcon={SidebarChevronIcon}
                     onClick={handleClicked}
                     disabled={false}
                 >
                 {isCollapsed ? <span>{description}</span> : <span>Hide</span>}
-                </Button>
+                </SVGButton>
             </div>
         </div>
     );

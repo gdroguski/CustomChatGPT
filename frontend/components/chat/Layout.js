@@ -1,8 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
-import styles from '../styles/Layout.module.css';
-import NavigationSidebar from "./sidebars/NavigationSidebar";
-import HistorySidebar from "./sidebars/history/HistorySidebar";
+import styles from '../../styles/chat/Layout.module.css';
+import NavigationSidebar from "../sidebars/NavigationSidebar";
+import HistorySidebar from "../sidebars/history/HistorySidebar";
 
 const Layout = ({children, title = 'Custom GPT'}) => {
     return (

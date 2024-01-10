@@ -1,7 +1,7 @@
 import React from 'react';
-import styles from "../../styles/Message.module.css";
+import styles from "../../styles/chat/Message.module.css";
 import {EditMessageIcon, LeftArrowIcon, NoIcon, RightArrowIcon, YesIcon} from "../../assets/SVGIcon";
-import Button from "./Button";
+import SVGButton from "../common/SVGButton";
 
 
 export const AdditionalInfo = ({isUser, message, isStreaming, editProps, versionsProps}) => {
@@ -27,7 +27,7 @@ export const AdditionalInfo = ({isUser, message, isStreaming, editProps, version
 export const AdditionalInfoEdit = ({isStreaming, editing, setEditing, editedMessage, setEditedMessage, message, messageEditConfirm}) => {
     if (!editing) {
         return (
-            <Button
+            <SVGButton
                 className={`${styles.icon} ${editing ? '' : styles.hoverVisible}`}
                 SVGIcon={EditMessageIcon}
                 onClick={() => {
@@ -45,7 +45,7 @@ export const AdditionalInfoEdit = ({isStreaming, editing, setEditing, editedMess
 
         return (
             <div className={styles.confirmationButtons}>
-                <Button
+                <SVGButton
                     className={`${commonClass} ${canConfirm ? styles.okButton : ''}`}
                     SVGIcon={YesIcon}
                     onClick={() => {
@@ -54,7 +54,7 @@ export const AdditionalInfoEdit = ({isStreaming, editing, setEditing, editedMess
                     }}
                     disabled={!canConfirm || !editing || isStreaming}
                 />
-                <Button
+                <SVGButton
                     className={`${commonClass} ${styles.cancelButton}`}
                     SVGIcon={NoIcon}
                     onClick={() => {
@@ -79,14 +79,14 @@ export const AdditionalInfoVersions = ({isStreaming, message, switchVersion, cur
         const activeRight = versionIndex < versions.length - 1;
         return (
             <>
-                <Button
+                <SVGButton
                     className={`${styles.icon} ${activeLeft ? styles.alwaysVisible : ''}`}
                     SVGIcon={LeftArrowIcon}
                     onClick={() => switchVersion(versionIndex, 'left')}
                     disabled={!activeLeft || isStreaming}
                 />
                 <span>{versionIndex + 1}/{versions.length}</span>
-                <Button
+                <SVGButton
                     className={`${styles.icon} ${activeRight ? styles.alwaysVisible : ''}`}
                     SVGIcon={RightArrowIcon}
                     onClick={() => switchVersion(versionIndex, 'right')}

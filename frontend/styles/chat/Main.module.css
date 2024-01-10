@@ -1,0 +1,68 @@
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.conversationContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chatControlContainer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    padding-bottom: 1rem;
+    padding-top: 2rem;
+    background: linear-gradient(to bottom, transparent, var(--primary-bg-dark));
+}
+
+.choiceButtonContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.chatInputContainer {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    align-items: center;
+    /*width: min(75%, 1500px);*/
+    min-width: 50%;
+}
+
+.chatInputContainer textarea {
+    position: relative;
+    flex: 1;
+    margin: auto;
+    padding: .5rem;
+    font-size: 1.05rem;
+    resize: none;
+    border-radius: .25em;
+    overflow: auto;
+    word-break: break-all;
+    justify-content: center;
+    background-color: var(--primary-bg-light);
+    color: var(--primary-txt-light);
+    max-height: 200px;
+    border: 0.1rem solid var(--secondary-bg-dark);
+}
+
+.chatInputContainer textarea:hover,
+.chatInputContainer textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0.25rem var(--button-bg-enabled);
+}
+
+.controlButtonsContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}

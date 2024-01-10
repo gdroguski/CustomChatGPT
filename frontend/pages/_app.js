@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import React from "react";
 import {Provider} from "react-redux";
 import {store} from "../redux/store";
-import Layout from "../components/Layout";
+import Layout from "../components/chat/Layout";
 import Modal from "react-modal";
 
 Modal.setAppElement('#__next');

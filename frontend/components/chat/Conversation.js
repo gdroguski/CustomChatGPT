@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "../../styles/Message.module.css";
+import styles from "../../styles/chat/Message.module.css";
 import Message from "./Message";
 
 const Conversation = ({messages, regenerateUserResponse, error}) => (

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import styles from "../styles/ModelButton.module.css";
+import styles from "../../styles/chat/ModelButton.module.css";
 
-import {GPT35, GPT4} from "../utils/constants";
+import {GPT35, GPT4} from "../../utils/constants";
 
 const ChoiceButton = ({disabled, chosenModel, onChoice}) => {
     const [chosenGPT, setChosenGPT] = useState(chosenModel);

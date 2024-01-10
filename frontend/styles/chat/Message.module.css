@@ -140,7 +140,7 @@
 
 .user::after {
     content: "";
-    background-image: url("../public/images/user_icon.svg");
+    background-image: url("../../public/images/user_icon.svg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -162,7 +162,7 @@
 
 .assistant::after {
     content: "";
-    background-image: url("../public/images/chatbot_icon.svg");
+    background-image: url("../../public/images/chatbot_icon.svg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;

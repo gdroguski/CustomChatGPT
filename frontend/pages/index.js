@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import Chat from "../components/Chat";
+import Chat from "../components/chat/Main";
 
 export default function Home() {
     return (

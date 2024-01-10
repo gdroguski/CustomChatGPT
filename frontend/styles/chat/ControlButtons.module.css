@@ -1,0 +1,47 @@
+.controlButtons {
+    display: flex;
+    margin-left: 1rem;
+}
+
+.controlButtons button {
+    position: relative;
+    cursor: pointer;
+    background: none;
+    border: .25em solid var(--button-bg-enabled);
+    fill: var(--button-bg-enabled);
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    padding: 5px;
+}
+
+.controlButtons button.disabled {
+    cursor: default;
+    background-color: var(--button-bg-disabled);
+    border-color: var(--button-bg-disabled-border);
+    fill: var(--button-bg-disabled);
+    box-shadow: none;
+}
+
+.controlButtons .stopButton.disabled,
+.controlButtons .regenerateButton.disabled {
+    display: none;
+}
+
+.generateButton:hover {
+    border-color: var(--button-bg-generate-hover);
+    box-shadow: 0 0 0.25rem var(--button-bg-generate-hover);
+    fill: var(--button-bg-generate-hover);
+}
+
+.stopButton:hover {
+    border-color: var(--button-bg-stop-hover);
+    box-shadow: 0 0 0.25rem var(--button-bg-stop-hover);
+    fill: var(--button-bg-stop-hover);
+}
+
+.regenerateButton:hover {
+    border-color: var(--button-bg-regenerate-hover);
+    box-shadow: 0 0 0.25rem var(--button-bg-regenerate-hover);
+    fill: var(--button-bg-regenerate-hover);
+}

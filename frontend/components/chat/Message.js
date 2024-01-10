@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import styles from "../../styles/Message.module.css";
+import styles from "../../styles/chat/Message.module.css";
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {useDispatch, useSelector} from "react-redux";

@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /*margin: 0.5rem;*/
+    margin-right: 1rem;
     padding: 0;
     width: 10rem;
     height: 50px;
@@ -13,7 +13,6 @@
     height: 50%;
     width: 100%;
     padding: 0.15rem;
-    margin-right: 1rem;
     background-color: var(--secondary-bg-dark);
     color: var(--primary-txt-light);
     border-color: var(--primary-bg-dark);

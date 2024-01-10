@@ -1,22 +1,21 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import styles from "../styles/Chat.module.css";
-import {postChatConversation, postChatTitle} from "../api";
-import Conversation from "./chat/Conversation";
-import Button from "./chat/Button";
-import {RegenerateIcon, StartIcon, StopIcon} from "../assets/SVGInputIcon";
+import styles from "../../styles/chat/Main.module.css";
+import {postChatConversation, postChatTitle} from "../../api";
+import Conversation from "./Conversation";
 import ChoiceButton from "./ModelButton";
 import {useDispatch, useSelector} from "react-redux";
-import {addMessage, changeTitle, setConversation} from "../redux/currentConversation";
+import {addMessage, changeTitle, setConversation} from "../../redux/currentConversation";
 import {
     addConversationMessageThunk,
     addConversationVersionThunk,
     createConversationThunk,
     getConversationBranchedThunk,
     updateConversation
-} from "../redux/conversations";
-import {setStreaming} from "../redux/streaming";
-import {AssistantRole, GPT35, MessageTypes, MockTitle, UserRole} from "../utils/constants";
-import {generateMockId} from "../utils/functions";
+} from "../../redux/conversations";
+import {setStreaming} from "../../redux/streaming";
+import {AssistantRole, GPT35, MessageTypes, MockTitle, UserRole} from "../../utils/constants";
+import {generateMockId} from "../../utils/functions";
+import {ControlButtons} from "./ControlButtons";
 
 
 const Chat = () => {
@@ -283,46 +282,60 @@ const Chat = () => {
         }));
     }
 
+    const renderChoiceButton = () => {
+        return (
+            <div className={styles.choiceButtonContainer}>
+                <ChoiceButton disabled={isStreaming} chosenModel={chosenModel} onChoice={handleModelChoice}/>
+            </div>
+        )
+    }
+
+    const renderChatInput = () => {
+        return (
+            <div className={styles.chatInputContainer}>
+                <textarea
+                    ref={inputRef}
+                    placeholder="Type a message here..."
+                    value={userInput}
+                    onChange={handleInputChanged}
+                    onKeyDown={handleKeyDown}
+                    rows={1}
+                />
+            </div>
+        )
+    }
+
+    const renderControlButtons = () => {
+        const generateProps = {
+            onClick: handleGenerateClick,
+            disabled: !userInput || isStreaming,
+        };
+        const stopProps = {
+            onClick: abortResponse,
+            disabled: !canStop,
+        };
+        const regenerateProps = {
+            onClick: regenerateAssistantResponse,
+            disabled: !canRegenerate,
+        };
+
+        return (
+            <div className={styles.controlButtonsContainer}>
+                <ControlButtons generateProps={generateProps} stopProps={stopProps} regenerateProps={regenerateProps}/>
+            </div>
+        )
+    }
+
     return (
         <div className={styles.chatContainer} ref={chatContainerRef}>
             <div className={styles.conversationContainer}>
                 <Conversation messages={currVersion.messages} regenerateUserResponse={regenerateUserResponse}
                               error={error}/>
             </div>
-            <div className={styles.chatInputContainer}>
-                <div className={styles.choiceButtonContainer}>
-                    <ChoiceButton disabled={isStreaming} chosenModel={chosenModel} onChoice={handleModelChoice}/>
-                </div>
-                <div className={styles.chatInput}>
-                    <textarea
-                        ref={inputRef}
-                        className={styles.chatInputField}
-                        placeholder="Type a message here..."
-                        value={userInput}
-                        onChange={handleInputChanged}
-                        onKeyDown={handleKeyDown}
-                        rows={1}
-                    />
-                    <Button
-                        className={styles.generateButton}
-                        SVGIcon={StartIcon}
-                        onClick={handleGenerateClick}
-                        disabled={!userInput || isStreaming}
-                    />
-                    <Button
-                        className={styles.stopButton}
-                        SVGIcon={StopIcon}
-                        onClick={abortResponse}
-                        disabled={!canStop}
-                    />
-                    <Button
-                        className={styles.regenerateButton}
-                        SVGIcon={RegenerateIcon}
-                        onClick={regenerateAssistantResponse}
-                        disabled={!canRegenerate}
-                    />
-                </div>
-                <div className={styles.inputMock}/>
+            <div className={styles.chatControlContainer}>
+                {renderChoiceButton()}
+                {renderChatInput()}
+                {renderControlButtons()}
             </div>
         </div>
     );
