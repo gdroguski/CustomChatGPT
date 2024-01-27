@@ -1,4 +1,4 @@
-import {backendApiBaseUrl} from "./config";
+import {backendApiBaseUrl} from "../config";
 
 /**
  * Posts a new chat conversation to the backend API.

@@ -98,4 +98,11 @@ export const EditMessageIcon = () => {
     )
 }
 
+export const LockKeyIcon = () => {
+    const d = "M 104,44 H 90 V 34 A 26,26 0 0 0 38,34 V 44 H 24 A 10,10 0 0 0 14,54 v 56 a 10,10 0 0 0 10,10 h 80 a 10,10 0 0 0 10,-10 V 54 A 10,10 0 0 0 104,44 Z M 50,34 a 14,14 0 0 1 28,0 V 44 H 50 Z m 52,74 H 26 V 56 h 76 z M 64,62 A 16,16 0 0 0 58,92.83 V 96 a 6,6 0 0 0 12,0 V 92.83 A 16,16 0 0 0 64,62 Z m 0,12 a 4,4 0 1 1 -4,4 4,4 0 0 1 4,-4 z";
+    return (
+        <SVGIcon d={d}/>
+    )
+}
+
 export default SVGIcon;

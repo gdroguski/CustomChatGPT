@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styles from "../../styles/chat/Main.module.css";
-import {postChatConversation, postChatTitle} from "../../api";
+import {postChatConversation, postChatTitle} from "../../api/gpt";
 import Conversation from "./Conversation";
 import ChoiceButton from "./ModelButton";
 import {useDispatch, useSelector} from "react-redux";
