@@ -28,6 +28,7 @@
     padding-left: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    transition: background-color 0.15s ease-in-out;
 }
 
 .sidebarContainer li:hover {
@@ -36,6 +37,7 @@
 }
 
 .sidebarContainer nav {
+    position: relative;
     width: 100%;
 }
 
@@ -66,10 +68,12 @@
 
 .collapseButton:hover {
     fill: var(--primary-yellow);
+    transition: fill 0.15s ease-in-out;
 }
 
 .collapseButton:hover span {
     color: var(--primary-yellow);
+    transition: color 0.15s ease-in-out;
 }
 
 .mirrored svg {
@@ -85,4 +89,23 @@
 .collapsed {
     border: none;
     width: 2rem;
+}
+
+.logoutContainer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 0.1rem solid var(--button-bg-enabled);
+    background-color: var(--primary-bg-dark);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.logoutContainer:hover {
+    background-color: var(--secondary-bg-dark);
+    border-top: 0.1rem solid var(--primary-yellow);
+    color: var(--primary-yellow);
 }

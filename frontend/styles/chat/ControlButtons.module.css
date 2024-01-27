@@ -1,6 +1,7 @@
 .controlButtons {
     display: flex;
     margin-left: 1rem;
+    gap: 1rem;
 }
 
 .controlButtons button {

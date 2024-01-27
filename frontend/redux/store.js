@@ -4,6 +4,7 @@ import allConversations from "./conversations";
 import currentConversation from "./currentConversation";
 import streaming from "./streaming";
 import loading from "./loading";
+import auth from "./auth";
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         currentConversation,
         streaming,
         loading,
+        auth,
     },
     middleware: [thunk],
 })
