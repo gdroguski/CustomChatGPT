@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "js-cookie": "^3.0.5",
     "next": "latest",
     "openai": "^4.7.1",
