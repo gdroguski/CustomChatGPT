@@ -5,7 +5,7 @@ import {darcula} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {useDispatch, useSelector} from "react-redux";
 import {switchConversationVersionThunk} from "../../redux/conversations";
 import {setConversation} from "../../redux/currentConversation";
-import {AdditionalInfoVersions, AdditionalInfoEdit, AdditionalInfo} from "./MessageAdditionalInfo";
+import {AdditionalInfo} from "./MessageAdditionalInfo";
 
 const parseInlineCode = (text) => {
     return text.split("`").map((part, index) => {

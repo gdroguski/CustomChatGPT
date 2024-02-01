@@ -1,14 +1,16 @@
 import {createSlice} from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
-        user: null,
+        user: Cookies.get('user') || null,
         csrfToken: null,
     },
     reducers: {
         setUser: (state, action) => {
             console.log('setUser', action.payload);  // delete this line later
+            Cookies.set('user', action.payload);
             return {...state, user: action.payload};
         },
         setCsrfToken: (state, action) => {

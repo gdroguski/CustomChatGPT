@@ -27,4 +27,21 @@ function LoginPage() {
     );
 }
 
+export async function getServerSideProps(context) {
+    const currUser = context.req.cookies.user || null;
+
+    if (currUser) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        }
+    }
+
+    return {
+        props: {}
+    }
+}
+
 export default LoginPage;
