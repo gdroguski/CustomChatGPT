@@ -13,6 +13,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("chat/", include("chat.urls")),
     path("gpt/", include("gpt.urls")),
-    path("auth/", include("auth.urls")),
+    path("auth/", include("authentication.urls")),
     path("", root_view),
 ]

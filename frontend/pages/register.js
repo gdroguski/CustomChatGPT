@@ -1,27 +1,24 @@
-import LoginForm from "../components/auth/LoginForm";
+import RegisterForm from "../components/auth/RegisterForm";
 import styles from "../styles/auth/auth.module.css"
-import {LockKeyIcon} from "../assets/SVGIcon";
+import {NewUserIcon} from "../assets/SVGIcon";
 import React, {useState} from "react";
 import Link from "next/link";
 
-function LoginPage() {
+function RegisterPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const disabledClassName = isSubmitting ? styles.disabled : '';
 
     return (
         <div className={styles.authRoot}>
-            <div className={styles.loginContainer}>
+            <div className={styles.registerContainer}>
                 <div className={styles.formContainer}>
                     <div className={styles.formHeader}>
-                        <LockKeyIcon/>
-                        <h1>Login</h1>
+                        <NewUserIcon/>
+                        <h1>Create an account</h1>
                     </div>
-                    <LoginForm isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting}/>
+                    <RegisterForm isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting}/>
                     <div className={styles.formFooter}>
-                        <Link href={"#"} className={disabledClassName}>Forgot credentials?</Link>
-                        <Link
-                            href="/register"
-                            className={disabledClassName}>Create an account</Link>
+                        <Link href={"/login"} className={disabledClassName}>Back</Link>
                     </div>
                 </div>
             </div>
@@ -46,4 +43,4 @@ export async function getServerSideProps(context) {
     }
 }
 
-export default LoginPage;
+export default RegisterPage;

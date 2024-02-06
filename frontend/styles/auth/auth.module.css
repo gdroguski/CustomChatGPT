@@ -1,4 +1,4 @@
-.loginRoot {
+.authRoot {
     position: absolute;
     display: flex;
     flex-direction: row;
@@ -10,6 +10,12 @@
 
 .loginContainer {
     width: min(50%, 500px);
+    min-height: 300px;
+    height: 75%;
+}
+
+.registerContainer {
+    width: min(75%, 750px);
     min-height: 300px;
     height: 75%;
 }
@@ -27,11 +33,18 @@
 }
 
 .formHeader {
+    display: flex;
+    flex-direction: column;
     max-width: 50%;
     justify-content: flex-start;
     align-items: center;
     color: var(--primary-txt-light);
     fill: var(--primary-txt-light);
+}
+
+.formHeader svg {
+    width: 128px;
+    height: 128px;
 }
 
 .formFooter {
@@ -49,14 +62,14 @@
     color: var(--primary-yellow);
 }
 
-.loginForm {
+.authForm {
     width: 50%;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.loginForm button {
+.authForm button {
     border-radius: 0.5rem;
     border: .125rem solid var(--primary-bg-dark);
     background-color: var(--button-bg-enabled);
@@ -67,22 +80,22 @@
     cursor: pointer;
 }
 
-.loginForm button:not(:disabled) {
+.authForm button:not(:disabled) {
     transition: background-color 0.2s ease-in-out;
 }
 
-.loginForm button:hover {
+.authForm button:hover {
     background-color: var(--primary-yellow);
 }
 
-.loginForm button:disabled {
+.authForm button:disabled {
     color: var(--primary-txt-light);
     background-color: var(--button-bg-disabled);
     border: .125rem solid var(--button-bg-disabled-border);
     cursor: default;
 }
 
-.loginForm button:disabled:hover {
+.authForm button:disabled:hover {
     background-color: var(--button-bg-disabled);
 }
 
@@ -101,6 +114,34 @@
     font-size: 1rem;
     font-family: inherit;
     padding: 0.5rem;
+}
+
+.formInputGroup input:focus {
+    outline: none;
+    border: .125rem solid var(--primary-yellow);
+}
+
+.formInputGroup input:disabled {
+    color: var(--primary-txt-light);
+    background-color: var(--secondary-bg-dark);
+}
+
+.formInputGroup span {
+    color: var(--primary-txt-light);
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+
+.passwordRequirements {
+    color: var(--primary-txt-light);
+    font-size: 1rem;
+    font-weight: normal;
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.passwordRequirements li.passed {
+    color: var(--success-green);
 }
 
 .errorMessage {

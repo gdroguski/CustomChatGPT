@@ -1,9 +1,9 @@
 import Chat from "../components/chat/Main";
 import Layout from "../components/chat/Layout";
-import {getCsrfToken, getServerSidePropsAuthHelper} from "../api/auth";
+import {getServerSidePropsAuthHelper} from "../api/auth";
 import {useDispatch} from "react-redux";
 import {useEffect} from "react";
-import {setCsrfToken} from "../redux/auth";
+import {fetchCsrfTokenThunk} from "../redux/auth";
 
 function Home({isAuthenticated}) {
     console.log("Home");
@@ -13,13 +13,7 @@ function Home({isAuthenticated}) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getCsrfToken().then((response) => {
-            if (response.ok) {
-                dispatch(setCsrfToken(response.data));
-            } else {
-                console.error(response.data);
-            }
-        });
+        dispatch(fetchCsrfTokenThunk());
     }, [dispatch]);
 
     return (

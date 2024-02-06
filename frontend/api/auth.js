@@ -16,7 +16,7 @@ export const getCsrfToken = async () => {
             };
         } else {
             return {
-                data: 'Error occurred while getting CSRF token.',
+                data: responseJson.error || 'Error occurred while getting CSRF token.',
                 ok: false,
             }
         }
@@ -29,16 +29,18 @@ export const getCsrfToken = async () => {
     }
 }
 
-export const postLogin = async ({username, password}) => {
+export const postLogin = async ({email, password}) => {
     try {
+        const xsrfToken = (await getCsrfToken()).data;
         const response = await fetch(`${backendApiBaseUrl}/auth/login/`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': xsrfToken,
             },
             body: JSON.stringify({
-                "username": username,
+                "email": email,
                 "password": password,
             }),
         });
@@ -49,8 +51,9 @@ export const postLogin = async ({username, password}) => {
                 ok: true,
             };
         } else {
+            const responseData = await response.json();
             return {
-                data: 'Invalid username or password.',
+                data: responseData.error || 'Invalid username or password.',
                 ok: false,
             }
         }
@@ -82,8 +85,9 @@ export const postLogout = async (csrfToken) => {
                 ok: true,
             };
         } else {
+            const responseData = await response.json();
             return {
-                data: 'Error occurred while logging out.',
+                data: responseData.error || 'Error occurred while logging out.',
                 ok: false,
             }
         }
@@ -97,10 +101,57 @@ export const postLogout = async (csrfToken) => {
 }
 
 
+export const postRegister = async ({email, password}) => {
+    try {
+        const response = await fetch(`${backendApiBaseUrl}/auth/register/`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "email": email,
+                "password": password,
+            }),
+        });
+
+        if (response.ok) {
+            return {
+                data: 'ok',
+                ok: true,
+            };
+        } else {
+            const responseData = await response.json();
+            return {
+                data: responseData.error || 'An error occurred during registration.',
+                ok: false,
+            }
+        }
+    } catch (error) {
+        console.error('An unexpected error occurred during registration:', error);
+        return {
+            data: 'An unexpected error occurred during registration.',
+            ok: false,
+        };
+    }
+};
+
+
 export async function getServerSidePropsAuthHelper(context) {
     let isAuthenticated = false;
 
     const session = context.req.cookies.sessionid || null;
+    const currUser = context.req.cookies.user || null;
+
+    if (!currUser) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        };
+    }
+
 
     if (session) {
         const response = await fetch(`${backendApiBaseUrl}/auth/verify_session`, {
@@ -116,7 +167,7 @@ export async function getServerSidePropsAuthHelper(context) {
     }
 
     if (!isAuthenticated) {
-        console.log('not authenticated');
+        console.log('not authenticated aa');
         return {
             redirect: {
                 destination: '/login',

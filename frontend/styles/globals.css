@@ -16,6 +16,8 @@
     --button-bg-stop-hover: #dc1c1c;
     --button-bg-regenerate-hover: #1c8ee1;
     --link-hover-color: #61dafb;
+    --success-green: var(--button-bg-generate-hover);
+    --error-red: var(--button-bg-stop-hover);
 }
 
 

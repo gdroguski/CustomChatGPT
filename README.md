@@ -44,6 +44,8 @@ The idea behind this project is to experiment with Next.js and create a personal
 ![switching versions and editing messages](images/switching_versions_editing.png)
 ## Login page
 ![login page](images/login.png)
+## Register page
+![register page](images/register.png)
 ## Admin page
 ![admin page](images/admin.png)
 
@@ -52,7 +54,7 @@ The idea behind this project is to experiment with Next.js and create a personal
   - Setup environment variables in `backend/.env` (create file if not exists):
     - `FRONTEND_URL` - url of frontend app - default: http://127.0.0.1:3000
     - `BACKEND_URL` - url of backend app - default: http://127.0.0.1:8000
-    - `BE_ADMIN_USERNAME` - username for django admin page - default: admin
+    - `BE_ADMIN_EMAIL` - email for django admin page - default: admin@admin.com
     - `BE_ADMIN_PASSWORD` - password for django admin page - default: admin
     - `DJANGO_SECRET_KEY` - django secret key
     - GPT part (currently set up for Azure endpoint):
@@ -62,7 +64,8 @@ The idea behind this project is to experiment with Next.js and create a personal
       - `OPENAI_API_KEY`: your azure api key
   - Create virtual environment and install requirements from `dependencies.txt`
   - Run `python manage.py makemigrations` and `python manage.py migrate`
-  - Run `python manage.py create_superuser`
+  - Run `python manage.py create_superuser` for creating superuser
+  - Run `python manage.py create_roles` for creating `user` and `assistant` roles
   - Run `python manage.py runserver`
 - Frontend:
   - Setup environment variables in `frontend/.env.local` (create file if not exists):
@@ -81,5 +84,5 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [ ] add RAG subpage
 - [ ] add work with files subpage
 - [x] add login & authorization for users
-- [ ] add registration <- in progress
-- [ ] add user chats separation
+- [x] add registration
+- [ ] add user chats separation <- in progress

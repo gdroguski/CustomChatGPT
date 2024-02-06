@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {postLogin} from '../../api/auth';
-import styles from "../../styles/auth/login.module.css"
-import {setUser} from "../../redux/auth";
+import styles from "../../styles/auth/auth.module.css"
+import {postLoginThunk} from "../../redux/auth";
 import {useDispatch} from "react-redux";
 import {useRouter} from "next/router";
+import {validateEmail} from "../../utils/validation";
 
 function Login({isSubmitting, setIsSubmitting}) {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -16,29 +16,31 @@ function Login({isSubmitting, setIsSubmitting}) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
-        const response = await postLogin({username, password});
+        const response = await dispatch(postLoginThunk({email, password}));
+        const result = response.payload;
 
-        if (response.ok) {
-            dispatch(setUser(username));
+        if (result.ok) {
             router.push('/').catch((error) => {
-                console.error('An unexpected error occurred while redirecting to main page:', error);
+                console.error('An unexpected error occurred while redirecting to main page');
             });
 
         } else {
-            setErrorMessage(response.data);
+            setErrorMessage(result.data);
             setIsSubmitting(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className={styles.loginForm}>
+        <form onSubmit={handleSubmit} className={styles.authForm}>
             <div className={styles.formInputGroup}>
-                <label>Username</label>
+                <label>Email</label>
                 <input
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder={"Enter username"}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={"Enter email address"}
+                    disabled={isSubmitting}
+                    required
                 />
             </div>
             <div className={styles.formInputGroup}>
@@ -48,9 +50,14 @@ function Login({isSubmitting, setIsSubmitting}) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={"Enter password"}
+                    disabled={isSubmitting || !validateEmail(email)}
+                    required
                 />
             </div>
-            <button type="submit" disabled={isSubmitting}>Log In</button>
+            <button
+                type="submit"
+                disabled={isSubmitting || !validateEmail(email) || password === ''}
+            >Log In</button>
             {
                 errorMessage &&
                 <div className={styles.errorMessage}>
