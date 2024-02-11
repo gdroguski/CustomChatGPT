@@ -76,7 +76,7 @@ The idea behind this project is to experiment with Next.js and create a personal
 
 # ToDo:
 - [ ] Dockerize: docker-compose for frontend, backend and db
-- [ ] migrate to PostgreSQL
+- [ ] migrate to PostgreSQL <- in progress
 - [ ] add support for different LLMs:
   - [ ] Claude
   - [ ] LLaMa
@@ -85,4 +85,4 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [ ] add work with files subpage
 - [x] add login & authorization for users
 - [x] add registration
-- [ ] add user chats separation <- in progress
+- [x] add user chats separation

@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import {addConversationMessageThunk, createConversationThunk, getConversationBranchedThunk} from "./conversations";
 import {AssistantRole, MockId, MockTitle} from "../utils/constants";
 import {isMockId} from "../utils/functions";
+import {postLogoutThunk} from "./auth";
 
 
 const initialState = {
@@ -61,6 +62,9 @@ const currentConversationSlice = createSlice({
                 console.log('\tgetConversationBranchedThunk.fulfilled curr convo', action.payload);
                 const latestVersion = action.payload.versions.find(v => v.active);
                 return {...latestVersion, title: action.payload.title};
+            })
+            .addCase(postLogoutThunk.fulfilled, () => {
+                return initialState;
             })
     }
 });

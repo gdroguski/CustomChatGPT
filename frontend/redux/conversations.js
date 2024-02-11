@@ -3,12 +3,26 @@ import axios from "axios";
 import {backendApiBaseUrl} from "../config";
 import {setStreaming} from "./streaming";
 import {setLoading} from "./loading";
+import Cookies from "js-cookie";
+import {postLogoutThunk} from "./auth";
+
+
+const axiosConfig = {
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': Cookies.get('csrftoken'),
+    },
+    withCredentials: true
+};
 
 export const fetchConversationsThunk = createAsyncThunk(
     'conversations/fetch',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get(`${backendApiBaseUrl}/chat/conversations_branched/`);
+            const response = await axios.get(
+                `${backendApiBaseUrl}/chat/conversations_branched/`,
+                {withCredentials: true}
+            );
             const result = response.data.map(conversation => {
                 return {
                     ...conversation,
@@ -36,7 +50,10 @@ export const createConversationThunk = createAsyncThunk(
             console.log("\tcreate conversation request: ", {title, messages}); // TODO: remove this line
 
             const response = await axios.post(
-                `${backendApiBaseUrl}/chat/conversations/add/`, {title: title, messages: messages});
+                `${backendApiBaseUrl}/chat/conversations/add/`,
+                {title: title, messages: messages},
+                axiosConfig
+            );
             console.log("\tcreate conversation response", response.data); // TODO: remove this line
             return {
                 ...response.data,
@@ -53,7 +70,10 @@ export const changeConversationTitleThunk = createAsyncThunk(
     async ({id, newTitle}, thunkAPI) => {
         try {
             await axios.put(
-                `${backendApiBaseUrl}/chat/conversations/${id}/change_title/`, {title: newTitle});
+                `${backendApiBaseUrl}/chat/conversations/${id}/change_title/`,
+                {title: newTitle},
+                axiosConfig
+            );
             console.log("\tchangeTitle conversation response", {id, newTitle}); // TODO: remove this line
             return {id: id, title: newTitle};
         } catch (error) {
@@ -67,7 +87,10 @@ export const deleteConversationThunk = createAsyncThunk(
     async ({id}, thunkAPI) => {
         try {
             await axios.put(
-                `${backendApiBaseUrl}/chat/conversations/${id}/delete/`);
+                `${backendApiBaseUrl}/chat/conversations/${id}/delete/`,
+                {},
+                axiosConfig
+            );
             console.log("\tdelete conversation response", {id}); // TODO: remove this line
             return id;
         } catch (error) {
@@ -82,10 +105,13 @@ export const addConversationMessageThunk = createAsyncThunk(
         try {
             console.log("\taddMessage conversation request", {conversationId, message}); // TODO: remove this line
             const response = await axios.post(
-                `${backendApiBaseUrl}/chat/conversations/${conversationId}/add_message/`, {
+                `${backendApiBaseUrl}/chat/conversations/${conversationId}/add_message/`,
+                {
                     role: message.role,
                     content: message.content
-                });
+                },
+                axiosConfig
+            );
             console.log("\taddMessage conversation response", response.data); // TODO: remove this line
             return {...response.data, role: message.role, hidden: hidden};
         } catch (error) {
@@ -102,7 +128,8 @@ export const addConversationVersionThunk = createAsyncThunk(
             console.log("\tcreateVersion conversation request", {conversationId, rootMessageId}); // TODO: remove this line
             const response = await axios.post(
                 `${backendApiBaseUrl}/chat/conversations/${conversationId}/add_version/`,
-                {root_message_id: rootMessageId}
+                {root_message_id: rootMessageId},
+                axiosConfig
             );
             console.log("\tcreateVersion conversation response", response.data); // TODO: remove this line
             console.timeEnd("addVersion");
@@ -121,7 +148,9 @@ export const getConversationBranchedThunk = createAsyncThunk(
             console.log("\tfetch branched conversation request", {conversationId}); // TODO: remove this line
             console.time("fetchBranched");
             const response = await axios.get(
-                `${backendApiBaseUrl}/chat/conversation_branched/${conversationId}/`);
+                `${backendApiBaseUrl}/chat/conversation_branched/${conversationId}/`,
+                {withCredentials: true}
+            );
             console.log("\tfetch branched conversation response 1", response.data); // TODO: remove this line
             const result = {
                 ...response.data,
@@ -142,7 +171,10 @@ export const switchConversationVersionThunk = createAsyncThunk(
     async ({conversationId, versionId}, thunkAPI) => {
         try {
             await axios.put(
-                `${backendApiBaseUrl}/chat/conversations/${conversationId}/switch_version/${versionId}/`);
+                `${backendApiBaseUrl}/chat/conversations/${conversationId}/switch_version/${versionId}/`,
+                {},
+                axiosConfig
+            );
             return {conversationId, versionId};
         } catch (error) {
             return thunkAPI.rejectWithValue({error: error.message});
@@ -231,6 +263,9 @@ const allConversationsSlice = createSlice({
                 const modifiedAt = new Date().toISOString();
 
                 state[activeConversationIndex] = {...activeConversation, modified_at: modifiedAt};
+            })
+            .addCase(postLogoutThunk.fulfilled, () => {
+                return [];
             })
     }
 });

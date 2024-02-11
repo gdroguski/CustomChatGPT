@@ -2,6 +2,8 @@ import uuid
 
 from django.db import models
 
+from authentication.models import CustomUser
+
 
 class Role(models.Model):
     name = models.CharField(max_length=20, blank=False, null=False, default="user")
@@ -19,7 +21,7 @@ class Conversation(models.Model):
         "Version", null=True, blank=True, on_delete=models.CASCADE, related_name="current_version_conversations"
     )
     deleted_at = models.DateTimeField(null=True, blank=True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title

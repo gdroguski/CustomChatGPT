@@ -113,7 +113,7 @@ def _get_branching_messages(curr_version: OrderedDict, parent_version: OrderedDi
             if parent_msg["id"] == curr_version_root_msg:
                 return curr_msg, parent_msg
             else:
-                raise Exception("Content mismatch between current message and parent message")
+                raise Exception("Content mismatch between current message and parent message")  # TODO: edge cases?
 
     if n > 0:
         curr_branch_msg, parent_branch_msg = next(msg_enumerable)

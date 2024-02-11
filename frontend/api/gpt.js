@@ -1,4 +1,5 @@
 import {backendApiBaseUrl} from "../config";
+import Cookies from "js-cookie";
 
 /**
  * Posts a new chat conversation to the backend API.
@@ -37,11 +38,13 @@ export const postChatConversation = async (newConversation, model, fetchOptions 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken'),
         },
         body: JSON.stringify({
             "conversation": newConversation,
             "model": model,
         }),
+        credentials: 'include',
         ...fetchOptions,
     });
 
@@ -71,10 +74,12 @@ export const postChatSingleQuestion = async (question) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken'),
         },
         body: JSON.stringify({
             "user_question": question
         }),
+        credentials: 'include',
     });
 
     if (!response.ok) {
@@ -89,11 +94,13 @@ export const postChatTitle = async ({user_question, chatbot_response}) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken'),
         },
         body: JSON.stringify({
             "user_question": user_question,
             "chatbot_response": chatbot_response,
         }),
+        credentials: 'include',
     });
 
     if (!response.ok) {

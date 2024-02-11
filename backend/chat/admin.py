@@ -51,7 +51,7 @@ class DeletedListFilter(admin.SimpleListFilter):
 class ConversationAdmin(NestedModelAdmin):
     actions = ["undelete_selected", "soft_delete_selected"]
     inlines = [VersionInline]
-    list_display = ("title", "id", "created_at", "modified_at", "deleted_at", "version_count", "is_deleted")
+    list_display = ("title", "id", "created_at", "modified_at", "deleted_at", "version_count", "is_deleted", "user")
     list_filter = (DeletedListFilter,)
     ordering = ("-modified_at",)
 

@@ -23,7 +23,6 @@ function Login({isSubmitting, setIsSubmitting}) {
             router.push('/').catch((error) => {
                 console.error('An unexpected error occurred while redirecting to main page');
             });
-
         } else {
             setErrorMessage(result.data);
             setIsSubmitting(false);

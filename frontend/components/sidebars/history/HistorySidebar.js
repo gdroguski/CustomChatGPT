@@ -19,7 +19,6 @@ const HistorySidebar = () => {
     const isStreaming = useSelector(state => state.streaming);
     const dispatch = useDispatch();
 
-    const conversationsCount = allConversations.length;
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(currConversation.id);
@@ -67,7 +66,7 @@ const HistorySidebar = () => {
         setSelectedId(MockId);
     }
 
-    const handleSelectConversation = useCallback((conversationId) => {
+    const handleSelectConversation = (conversationId) => {
         const selectedConversation = allConversations.find(c => c.id === conversationId);
         if (selectedConversation) {
             const latestVersion = selectedConversation.versions.find(v => v.active);
@@ -75,7 +74,7 @@ const HistorySidebar = () => {
             dispatch(setConversation({...latestVersion, title: selectedConversation.title}));
             setSelectedId(selectedConversation.id);
         }
-    }, [allConversations]);
+    };
 
 
     const navElements = useCallback(() => {
@@ -116,7 +115,7 @@ const HistorySidebar = () => {
                 </div>
             </div>
         )
-    }, [conversationsCount, isStreaming, isEditModalOpen, isDeleteModalOpen, selectedId]);
+    }, [allConversations, isStreaming, isEditModalOpen, isDeleteModalOpen, selectedId]);
 
     const description = "History";
 

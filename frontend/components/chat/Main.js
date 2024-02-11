@@ -263,6 +263,10 @@ const Chat = () => {
         if (currVersion.title === MockTitle)
             return Promise.resolve();
         const newMessage = {role: role, content: message};
+        // if this is first user's message then hidden = true
+        if (role === UserRole && currVersion.messages.length === 2) {
+            hidden = true;
+        }
         return dispatch(addConversationMessageThunk({
             conversationId: currVersion.conversation_id,
             message: newMessage,
