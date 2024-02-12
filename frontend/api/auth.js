@@ -1,22 +1,19 @@
-import {backendApiBaseUrl} from "../config";
+import {axiosInstance} from "./axios";
 
 
 export const getCsrfToken = async () => {
     try {
-        const response = await fetch(`${backendApiBaseUrl}/auth/csrf_token/`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-        const responseJson = await response.json();
+        const response = await axiosInstance.get(`/auth/csrf_token/`);
 
-        if (response.ok) {
+        if (response.status === 200) {
+            const responseData = response.data;
             return {
-                data: responseJson.data,
+                data: responseData.data,
                 ok: true,
             };
         } else {
             return {
-                data: responseJson.error || 'Error occurred while getting CSRF token.',
+                data: response.error || 'Error occurred while getting CSRF token.',
                 ok: false,
             }
         }
@@ -31,34 +28,32 @@ export const getCsrfToken = async () => {
 
 export const postLogin = async ({email, password}) => {
     try {
-        const xsrfToken = (await getCsrfToken()).data;
-        const response = await fetch(`${backendApiBaseUrl}/auth/login/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': xsrfToken,
-            },
-            body: JSON.stringify({
-                "email": email,
-                "password": password,
-            }),
-        });
+        const response = await axiosInstance.post(`/auth/login/`,
+            {
+                email,
+                password
+            });
 
-        if (response.ok) {
+        if (response.status === 200) {
             return {
                 data: 'ok',
                 ok: true,
             };
         } else {
-            const responseData = await response.json();
             return {
-                data: responseData.error || 'Invalid username or password.',
+                data: response.error || 'Invalid username or password.',
                 ok: false,
             }
         }
     } catch (error) {
-        console.error('An unexpected error occurred during login:', error);
+        if (error.response && error.response.status  === 401) {
+            const serverResponse = error.response.data.error;
+            return {
+                data: serverResponse || 'Invalid username or password.',
+                ok: false,
+            };
+        }
+
         return {
             data: 'An unexpected error occurred during login.',
             ok: false,
@@ -70,24 +65,18 @@ export const postLogin = async ({email, password}) => {
 export const postLogout = async (csrfToken) => {
     console.log('postLogout', csrfToken);
     try {
-        const response = await fetch(`${backendApiBaseUrl}/auth/logout/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-        });
+        const response = await axiosInstance.post(`/auth/logout/`,
+            {}
+        );
 
-        if (response.ok) {
+        if (response.status === 200) {
             return {
                 data: 'ok',
                 ok: true,
             };
         } else {
-            const responseData = await response.json();
             return {
-                data: responseData.error || 'Error occurred while logging out.',
+                data: response.error || 'Error occurred while logging out.',
                 ok: false,
             }
         }
@@ -103,27 +92,21 @@ export const postLogout = async (csrfToken) => {
 
 export const postRegister = async ({email, password}) => {
     try {
-        const response = await fetch(`${backendApiBaseUrl}/auth/register/`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "email": email,
-                "password": password,
-            }),
-        });
+        const response = await axiosInstance.post(`/auth/register/`,
+            {
+                email,
+                password
+            });
+        console.log('postRegister', response);
 
-        if (response.ok) {
+        if (response.status === 201) {
             return {
                 data: 'ok',
                 ok: true,
             };
         } else {
-            const responseData = await response.json();
             return {
-                data: responseData.error || 'An error occurred during registration.',
+                data: response.error || 'An error occurred during registration.',
                 ok: false,
             }
         }
@@ -154,20 +137,18 @@ export async function getServerSidePropsAuthHelper(context) {
 
 
     if (session) {
-        const response = await fetch(`${backendApiBaseUrl}/auth/verify_session`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Cookie': `sessionid=${session}`,
-            }
-        });
-        const responseJson = await response.json();
+        const response = (await axiosInstance.get(`/auth/verify_session`,
+            {
+                headers: {
+                    'Cookie': `sessionid=${session}`,
+                }
+            })).data;
 
-        isAuthenticated = responseJson.data;
+        isAuthenticated = response.data;
     }
 
     if (!isAuthenticated) {
-        console.log('not authenticated aa');
+        console.log('User is not authenticated, redirecting to login page.');
         return {
             redirect: {
                 destination: '/login',

@@ -1,19 +1,9 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {backendApiBaseUrl} from "../config";
 import {setStreaming} from "./streaming";
 import {setLoading} from "./loading";
-import Cookies from "js-cookie";
 import {postLogoutThunk} from "./auth";
 import {axiosInstance} from "../api/axios";
 
-
-// const axiosConfig = {
-//     headers: {
-//         'Content-Type': 'application/json',
-//         'X-CSRFToken': Cookies.get('csrftoken'),
-//     },
-//     withCredentials: true
-// };
 
 export const fetchConversationsThunk = createAsyncThunk(
     'conversations/fetch',
