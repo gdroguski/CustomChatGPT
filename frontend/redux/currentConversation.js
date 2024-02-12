@@ -1,7 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {addConversationMessageThunk, createConversationThunk, getConversationBranchedThunk} from "./conversations";
 import {AssistantRole, MockId, MockTitle} from "../utils/constants";
-import {isMockId} from "../utils/functions";
 import {postLogoutThunk} from "./auth";
 
 
