@@ -87,3 +87,4 @@ The idea behind this project is to experiment with Next.js and create a personal
 - [x] add registration
 - [x] add user chats separation
 - [ ] async django rest framework views
+- [ ] add more tests

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "nested_admin",
     "authentication",
     "chat",
+    "gpt",
 ]
 
 MIDDLEWARE = [

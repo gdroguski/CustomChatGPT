@@ -5,16 +5,24 @@ from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from authentication.models import CustomUser
 from chat.models import Conversation, Message, Role, Version
 
 
-class ConversationTests(APITestCase):
+class LoggedInConversationTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         Role.objects.create(name="user")
         Role.objects.create(name="assistant")
 
+        cls.mock_user = CustomUser.objects.create(email="mock@email.com", is_active=True)
+        cls.mock_user.set_password("password")
+        cls.mock_user.save()
+
     def setUp(self):
+        is_logged_in = self.client.login(email="mock@email.com", password="password")
+        assert is_logged_in, "User login failed"
+
         self.mock_title = "Mock title"
         self.test_title = "Test title"
         self.random_title = "Random title"
@@ -38,7 +46,7 @@ class ConversationTests(APITestCase):
             "content": "Hello, how can I help you fella?",
         }
 
-        self.conversation = Conversation.objects.create(title=self.test_title)
+        self.conversation = Conversation.objects.create(title=self.test_title, user=self.mock_user)
         self.version = Version.objects.create(conversation=self.conversation)
         with freeze_time("2023-01-01 21:37:00"):
             first_message = Message.objects.create(
@@ -64,7 +72,7 @@ class ConversationTests(APITestCase):
         self.conversation.active_version = self.version
         self.conversation.save()
 
-        self.deleted_conversation = Conversation.objects.create(title="Deleted conversation")
+        self.deleted_conversation = Conversation.objects.create(title="Deleted conversation", user=self.mock_user)
         self.deleted_conversation.delete()
 
     def test_health_check(self):
@@ -475,7 +483,7 @@ class ConversationTests(APITestCase):
 
     def test_conversation_add_version_invalid_message_id(self):
         # Create a separate conversation with a message
-        separate_conversation = Conversation.objects.create(title="Separate Conversation")
+        separate_conversation = Conversation.objects.create(title="Separate Conversation", user=self.mock_user)
         separate_version = Version.objects.create(conversation=separate_conversation)
         separate_role = Role.objects.get(name="user")
         separate_message = Message.objects.create(
@@ -547,7 +555,7 @@ class ConversationTests(APITestCase):
 
     def test_conversation_add_version_no_messages(self):
         # Create a new conversation with no messages
-        conversation = Conversation.objects.create(title="Empty Conversation")
+        conversation = Conversation.objects.create(title="Empty Conversation", user=self.mock_user)
 
         # Try to add a version to the conversation
         url = reverse("conversation_add_version", kwargs={"pk": conversation.id})
@@ -586,7 +594,7 @@ class ConversationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_conversation_switch_version_version_not_belong_to_conversation(self):
-        other_conversation = Conversation.objects.create(title="Other Conversation")
+        other_conversation = Conversation.objects.create(title="Other Conversation", user=self.mock_user)
         other_version = Version.objects.create(conversation=other_conversation)
 
         url = reverse(
