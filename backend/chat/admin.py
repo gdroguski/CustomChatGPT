@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils import timezone
 from nested_admin.nested import NestedModelAdmin, NestedStackedInline, NestedTabularInline
 
-from .models import Conversation, Message, Role, Version
+from chat.models import Conversation, Message, Role, Version
 
 
 class RoleAdmin(NestedModelAdmin):

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from gpt import views
 
 urlpatterns = [
     path("", views.gpt_root_view),
