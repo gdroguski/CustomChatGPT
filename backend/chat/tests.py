@@ -12,8 +12,8 @@ from chat.models import Conversation, Message, Role, Version
 class LoggedInConversationTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
-        Role.objects.create(name="user")
-        Role.objects.create(name="assistant")
+        cls.user_role = Role.objects.create(name="user")
+        cls.assistant_role = Role.objects.create(name="assistant")
 
         cls.mock_user = CustomUser.objects.create(email="mock@email.com", is_active=True)
         cls.mock_user.set_password("password")
@@ -50,20 +50,20 @@ class LoggedInConversationTests(APITestCase):
         self.version = Version.objects.create(conversation=self.conversation)
         with freeze_time("2023-01-01 21:37:00"):
             first_message = Message.objects.create(
-                version=self.version, **{**self.single_user_message, "role": Role.objects.get(name="user")}
+                version=self.version, **{**self.single_user_message, "role": self.user_role}
             )
         with freeze_time("2023-01-01 21:37:10"):
             second_message = Message.objects.create(
-                version=self.version, **{**self.single_assistant_message, "role": Role.objects.get(name="assistant")}
+                version=self.version, **{**self.single_assistant_message, "role": self.assistant_role}
             )
         with freeze_time("2023-01-01 21:37:20"):
             third_message = Message.objects.create(
-                version=self.version, **{**self.single_user_second_message, "role": Role.objects.get(name="user")}
+                version=self.version, **{**self.single_user_second_message, "role": self.user_role}
             )
         with freeze_time("2023-01-01 21:37:30"):
             fourth_message = Message.objects.create(
                 version=self.version,
-                **{**self.single_assistant_second_message, "role": Role.objects.get(name="assistant")}
+                **{**self.single_assistant_second_message, "role": self.assistant_role},
             )
         self.messages = [first_message, second_message, third_message, fourth_message]
         self.version.messages.set(self.messages)
@@ -71,9 +71,6 @@ class LoggedInConversationTests(APITestCase):
         self.version.save()
         self.conversation.active_version = self.version
         self.conversation.save()
-
-        self.deleted_conversation = Conversation.objects.create(title="Deleted conversation", user=self.mock_user)
-        self.deleted_conversation.delete()
 
     def test_health_check(self):
         url = reverse("chat_root_view")
