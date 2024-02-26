@@ -19,6 +19,7 @@ filelock==3.12.4
 flake8==6.1.0
 freezegun==1.2.2
 frozenlist==1.4.0
+h11==0.14.0
 identify==2.5.30
 idna==3.4
 isort==5.12.0
@@ -46,5 +47,6 @@ tqdm==4.66.1
 typing_extensions==4.8.0
 tzdata==2023.3
 urllib3==2.0.5
+uvicorn==0.27.1
 virtualenv==20.24.5
 yarl==1.9.2
