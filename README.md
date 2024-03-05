@@ -66,7 +66,9 @@ The idea behind this project is to experiment with Next.js and create a personal
   - Run `python manage.py makemigrations` and `python manage.py migrate`
   - Run `python manage.py create_superuser` for creating superuser
   - Run `python manage.py create_roles` for creating `user` and `assistant` roles
-  - Run `python manage.py runserver`
+  - Run `python manage.py collectstatic`
+  - Run `python manage.py runserver` if you want to run it in vanilla way
+  - Run `python server.py` if you want to run it with uvicorn
 - Frontend:
   - Setup environment variables in `frontend/.env.local` (create file if not exists):
     - `NEXT_PUBLIC_API_BASE_URL` - url of backend app - default: http://127.0.0.1:8000
